@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.modules.camera;
+package com.reactnativecommunity.imageeditor;
 
 import javax.annotation.Nullable;
 
@@ -47,15 +47,13 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.module.annotations.ReactModule;
 
 /**
  * Native module that provides image cropping functionality.
  */
-@ReactModule(name = ImageEditingManager.NAME)
-public class ImageEditingManager extends ReactContextBaseJavaModule {
+public class ImageEditorModule extends ReactContextBaseJavaModule {
 
-  protected static final String NAME = "ImageEditingManager";
+  protected static final String NAME = "RNCImageEditor";
 
   private static final List<String> LOCAL_URI_PREFIXES = Arrays.asList(
       "file://", "content://");
@@ -93,7 +91,7 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
     ExifInterface.TAG_WHITE_BALANCE
   };
 
-  public ImageEditingManager(ReactApplicationContext reactContext) {
+  public ImageEditorModule(ReactApplicationContext reactContext) {
     super(reactContext);
     new CleanTask(getReactApplicationContext()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }

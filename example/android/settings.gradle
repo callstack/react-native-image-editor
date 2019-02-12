@@ -1,0 +1,6 @@
+rootProject.name = 'ImageEditorExample'
+
+include ':app'
+include ':rnImageEditor'
+
+project(':rnImageEditor').projectDir = new File(rootProject.projectDir, '../../android')

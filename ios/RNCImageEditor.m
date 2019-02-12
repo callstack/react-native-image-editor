@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTImageEditingManager.h"
+#import "RNCImageEditor.h"
 
 #import <UIKit/UIKit.h>
 
@@ -13,11 +13,11 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 
-#import "RCTImageLoader.h"
-#import "RCTImageStoreManager.h"
-#import "RCTImageUtils.h"
+#import <React/RCTImageLoader.h>
+#import <React/RCTImageStoreManager.h>
+#import <React/RCTImageUtils.h>
 
-@implementation RCTImageEditingManager
+@implementation RNCImageEditor
 
 RCT_EXPORT_MODULE()
 
