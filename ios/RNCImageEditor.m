@@ -15,7 +15,7 @@
 
 #import <React/RCTImageLoader.h>
 #import <React/RCTImageStoreManager.h>
-#import <React/RCTImageUtils.h>
+#import <RCTImage/RCTImageUtils.h>
 
 @implementation RNCImageEditor
 
