@@ -17,6 +17,8 @@ import {
   Text,
   TouchableHighlight,
   View,
+  PermissionsAndroid,
+  Platform,
 } from 'react-native';
 import ImageEditor from '@react-native-community/image-editor';
 
@@ -39,7 +41,43 @@ type ImageCropData = {|
   resizeMode?: ?any,
 |};
 
-export default class SquareImageCropper extends React.Component<
+type State = {
+  render: boolean,
+};
+
+export default class PermissionRequestor extends React.Component<{}, State> {
+  state = {
+    render: Platform.OS === 'android' ? false : true,
+  };
+
+  async componentDidMount() {
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        {
+          title: 'ImageEditor example app',
+          message: 'We need access to your images to test the functionality',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        }
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        this.setState({ render: true });
+      }
+    }
+  }
+
+  render() {
+    if (!this.state.render) {
+      return <Text>We need permission to read your images.</Text>;
+    }
+
+    return <SquareImageCropper />;
+  }
+}
+
+class SquareImageCropper extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState
 > {
