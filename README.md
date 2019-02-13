@@ -1,18 +1,16 @@
-# react-native-async-storage
+# react-native-image-editor
 
 Image Editor Native module for React Native.
 
 ## Getting started
 
-
-### Install 
+### Install
 
 `yarn add @react-native-community/image-editor`
 
 or
 
 `npm install @react-native-community/image-editor --save`
-
 
 ### Link
 
@@ -21,4 +19,3 @@ or
 ## Usage
 
 ToDo
-
