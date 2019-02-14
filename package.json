@@ -20,6 +20,7 @@
   },
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test:flow": "flow check",
     "test:lint": "eslint 'lib/**/*.js' 'example/**/*.js'"
   },
   "peerDependencies": {
