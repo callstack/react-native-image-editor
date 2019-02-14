@@ -19,7 +19,8 @@
     "url": "https://github.com/react-native-community/react-native-image-editor.git"
   },
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start"
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test:lint": "eslint 'lib/**/*.js' 'example/**/*.js'"
   },
   "peerDependencies": {
     "react": "^16.0",
