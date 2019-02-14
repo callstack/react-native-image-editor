@@ -8,7 +8,7 @@
  * @flow
  */
 
-import React, { Component } from 'react';
+import React from 'react';
 import {
   CameraRoll,
   Image,
@@ -60,10 +60,10 @@ export default class PermissionRequestor extends React.Component<{}, State> {
           buttonNeutral: 'Ask Me Later',
           buttonNegative: 'Cancel',
           buttonPositive: 'OK',
-        }
+        },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        this.setState({ render: true });
+        this.setState({render: true});
       }
     }
   }
@@ -79,7 +79,7 @@ export default class PermissionRequestor extends React.Component<{}, State> {
 
 class SquareImageCropper extends React.Component<
   $FlowFixMeProps,
-  $FlowFixMeState
+  $FlowFixMeState,
 > {
   state: any;
   _isMounted: boolean;
@@ -102,7 +102,7 @@ class SquareImageCropper extends React.Component<
 
   async _fetchRandomPhoto() {
     try {
-      const data = await CameraRoll.getPhotos({ first: PAGE_SIZE });
+      const data = await CameraRoll.getPhotos({first: PAGE_SIZE});
       if (!this._isMounted) {
         return;
       }
@@ -110,7 +110,7 @@ class SquareImageCropper extends React.Component<
       const edge = edges[Math.floor(Math.random() * edges.length)];
       const randomPhoto = edge && edge.node && edge.node.image;
       if (randomPhoto) {
-        this.setState({ randomPhoto });
+        this.setState({randomPhoto});
       }
     } catch (error) {
       console.warn("Can't get a photo from camera roll", error);
@@ -132,7 +132,7 @@ class SquareImageCropper extends React.Component<
               return;
             }
             this.setState({
-              measuredSize: { width: measuredWidth, height: measuredWidth },
+              measuredSize: {width: measuredWidth, height: measuredWidth},
             });
           }}
         />
@@ -164,8 +164,7 @@ class SquareImageCropper extends React.Component<
         />
         <TouchableHighlight
           style={styles.cropButtonTouchable}
-          onPress={this._crop.bind(this)}
-        >
+          onPress={this._crop.bind(this)}>
           <View style={styles.cropButton}>
             <Text style={styles.cropButtonLabel}>Crop</Text>
           </View>
@@ -180,13 +179,12 @@ class SquareImageCropper extends React.Component<
       <View style={styles.container}>
         <Text>Here is the cropped image:</Text>
         <Image
-          source={{ uri: this.state.croppedImageURI }}
+          source={{uri: this.state.croppedImageURI}}
           style={[styles.imageCropper, this.state.measuredSize]}
         />
         <TouchableHighlight
           style={styles.cropButtonTouchable}
-          onPress={this._reset.bind(this)}
-        >
+          onPress={this._reset.bind(this)}>
           <View style={styles.cropButton}>
             <Text style={styles.cropButtonLabel}>Try again</Text>
           </View>
@@ -199,8 +197,8 @@ class SquareImageCropper extends React.Component<
     ImageEditor.cropImage(
       this.state.randomPhoto.uri,
       this._transformData,
-      croppedImageURI => this.setState({ croppedImageURI }),
-      cropError => this.setState({ cropError })
+      croppedImageURI => this.setState({croppedImageURI}),
+      cropError => this.setState({cropError}),
     );
   }
 
@@ -252,16 +250,16 @@ class ImageCropper extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
     };
     this._maximumZoomScale = Math.min(
       this.props.image.width / this._scaledImageSize.width,
-      this.props.image.height / this._scaledImageSize.height
+      this.props.image.height / this._scaledImageSize.height,
     );
     this._minimumZoomScale = Math.max(
       this.props.size.width / this._scaledImageSize.width,
-      this.props.size.height / this._scaledImageSize.height
+      this.props.size.height / this._scaledImageSize.height,
     );
     this._updateTransformData(
       this._contentOffset,
       this._scaledImageSize,
-      this.props.size
+      this.props.size,
     );
   }
 
@@ -269,7 +267,7 @@ class ImageCropper extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
     this._updateTransformData(
       event.nativeEvent.contentOffset,
       event.nativeEvent.contentSize,
-      event.nativeEvent.layoutMeasurement
+      event.nativeEvent.layoutMeasurement,
     );
   }
 
@@ -308,8 +306,7 @@ class ImageCropper extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         style={this.props.style}
-        scrollEventThrottle={16}
-      >
+        scrollEventThrottle={16}>
         <Image source={this.props.image} style={this._scaledImageSize} />
       </ScrollView>
     );
