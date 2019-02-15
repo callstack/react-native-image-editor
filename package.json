@@ -21,7 +21,7 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test:flow": "flow check",
-    "test:lint": "eslint 'lib/**/*.js' 'example/**/*.js'"
+    "test:eslint": "eslint 'lib/**/*.js' 'example/**/*.js'"
   },
   "peerDependencies": {
     "react": "^16.0",
