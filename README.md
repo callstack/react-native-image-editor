@@ -2,6 +2,7 @@
 
 Image Editor Native module for React Native. This module was extracted from React-Native core in the ["Lean Core"](https://github.com/facebook/react-native/issues/23313) process.
 
+[![Build Status][build-badge]][build]
 [![Version][version-badge]][package]
 [![MIT License][license-badge]][license]
 [![PRs Welcome][prs-welcome-badge]][prs-welcome]
@@ -48,6 +49,8 @@ If the cropping process is successful, the resultant cropped image will be store
 For more advanced usage check our [example app](/example/src/App.js).
 
 <!-- badges -->
+[build-badge]: https://img.shields.io/circleci/project/github/react-native-community/react-native-image-editor/master.svg?style=flat-square
+[build]: https://circleci.com/gh/react-native-community/react-native-image-editor
 [version-badge]: https://img.shields.io/npm/v/@react-native-community/image-editor.svg?style=flat-square
 [package]: https://www.npmjs.com/package/@react-native-community/image-editor
 [license-badge]: https://img.shields.io/npm/l/@react-native-community/image-editor.svg?style=flat-square
