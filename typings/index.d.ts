@@ -28,11 +28,7 @@ export type ImageCropData = {
    * (Optional) the resizing mode to use when scaling the image. If the
    * `displaySize` param is not specified, this has no effect.
    */
-  resizeMode?: $Maybe<{
-    contain: string,
-    cover: string,
-    stretch: string,
-  }>,
+  resizeMode?: $Maybe<"contain" | "cover" | "stretch">,
 };
 
 declare class ImageEditor {
