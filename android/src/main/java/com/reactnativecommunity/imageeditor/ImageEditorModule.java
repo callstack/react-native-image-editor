@@ -510,7 +510,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
    */
   private static int getDecodeSampleSize(int width, int height, int targetWidth, int targetHeight) {
     int inSampleSize = 1;
-    if (height > targetWidth || width > targetHeight) {
+    if (height > targetHeight || width > targetWidth) {
       int halfHeight = height / 2;
       int halfWidth = width / 2;
       while ((halfWidth / inSampleSize) >= targetWidth
