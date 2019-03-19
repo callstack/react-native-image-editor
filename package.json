@@ -55,5 +55,8 @@
   },
   "jest": {
     "preset": "react-native"
+  }, 
+  "publishConfig": {
+    "access": "public"
   }
 }
