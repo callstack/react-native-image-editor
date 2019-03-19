@@ -15,7 +15,11 @@
 
 #import <React/RCTImageLoader.h>
 #import <React/RCTImageStoreManager.h>
+#if __has_include(<RCTImage/RCTImageUtils.h>)
 #import <RCTImage/RCTImageUtils.h>
+#else
+#import "RCTImageUtils.h"
+#endif
 
 @implementation RNCImageEditor
 
