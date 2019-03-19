@@ -23,7 +23,8 @@
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test:flow": "flow check",
     "test:eslint": "eslint 'lib/**/*.js' 'example/**/*.js'",
-    "release": "release-it"
+    "release": "release-it",
+    "postinstall": "patch-package"
   },
   "peerDependencies": {
     "react": "^16.0",
@@ -43,7 +44,9 @@
     "react": "16.6.3",
     "react-native": "0.58.4",
     "react-test-renderer": "16.6.3",
-    "release-it": "^10.3.1"
+    "release-it": "^10.3.1",
+    "patch-package": "^6.0.5",
+    "postinstall-postinstall": "^2.0.0"
   },
   "eslintConfig": {
     "extends": "@react-native-community",
@@ -55,7 +58,7 @@
   },
   "jest": {
     "preset": "react-native"
-  }, 
+  },
   "publishConfig": {
     "access": "public"
   }
