@@ -41,7 +41,8 @@
     "metro-react-native-babel-preset": "0.51.1",
     "react": "16.6.3",
     "react-native": "0.58.4",
-    "react-test-renderer": "16.6.3"
+    "react-test-renderer": "16.6.3",
+    "release-it": "^10.3.1"
   },
   "eslintConfig": {
     "extends": "@react-native-community",
