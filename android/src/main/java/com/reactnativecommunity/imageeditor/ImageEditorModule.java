@@ -325,18 +325,6 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
       // Loading large bitmaps efficiently:
       // http://developer.android.com/training/displaying-bitmaps/load-bitmap.html
 
-      // Just decode the dimensions
-      BitmapFactory.Options options = new BitmapFactory.Options();
-      options.inJustDecodeBounds = true;
-      InputStream inputStream = openBitmapInputStream();
-      try {
-        BitmapFactory.decodeStream(inputStream, null, options);
-      } finally {
-        if (inputStream != null) {
-          inputStream.close();
-        }
-      }
-
       // This uses scaling mode COVER
 
       // Where would the crop rect end up within the scaled bitmap?
@@ -362,8 +350,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
       // Decode the bitmap. We have to open the stream again, like in the example linked above.
       // Is there a way to just continue reading from the stream?
       outOptions.inSampleSize = getDecodeSampleSize(mWidth, mHeight, targetWidth, targetHeight);
-      options.inJustDecodeBounds = false;
-      inputStream = openBitmapInputStream();
+      InputStream inputStream = openBitmapInputStream();
 
       Bitmap bitmap;
       try {
