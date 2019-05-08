@@ -1,4 +1,4 @@
 
-it('finds no permission text in example app', async () => {
+it('finds example text', async () => {
   await expect(element(by.id('headerText'))).toBeVisible();
 });
