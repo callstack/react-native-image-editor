@@ -59,11 +59,11 @@ workflows:
           requires:
             - build_android_release
       - rn/ios_build_and_test:
-          project_path: "example/ios/example.xcodeproj"
+          project_path: "example/ios/ImageEditorExample.xcodeproj"
           derived_data_path: "example/ios/build"
           device: "iPhone X"
           build_configuration: "Release"
-          scheme: "example"
+          scheme: "ImageEditorExample"
           detox_configuration: "ios.sim.release"
           detox_loglevel: "trace"
           requires:
