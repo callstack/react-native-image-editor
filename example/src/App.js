@@ -70,7 +70,11 @@ export default class PermissionRequestor extends React.Component<{}, State> {
 
   render() {
     if (!this.state.render) {
-      return <Text>We need permission to read your images.</Text>;
+      return (
+        <Text testID={'noPermission'}>
+          We need permission to read your images.
+        </Text>
+      );
     }
 
     return <SquareImageCropper />;
@@ -155,7 +159,9 @@ class SquareImageCropper extends React.Component<
     }
     return (
       <View style={styles.container}>
-        <Text>Drag the image within the square to crop:</Text>
+        <Text testID={'headerText'}>
+          Drag the image within the square to crop:
+        </Text>
         <ImageCropper
           image={this.state.randomPhoto}
           size={this.state.measuredSize}
@@ -307,7 +313,11 @@ class ImageCropper extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
         showsVerticalScrollIndicator={false}
         style={this.props.style}
         scrollEventThrottle={16}>
-        <Image source={this.props.image} style={this._scaledImageSize} />
+        <Image
+          testID={'testImage'}
+          source={this.props.image}
+          style={this._scaledImageSize}
+        />
       </ScrollView>
     );
   }
