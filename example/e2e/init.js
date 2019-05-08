@@ -6,13 +6,11 @@ jest.setTimeout(300000);
 jasmine.getEnv().addReporter(adapter);
 
  beforeAll(async () => {
-	await detox.init(config, { launchApp: false });
-  await device.launchApp({ permissions:{ photos: 'YES' }});
+	await detox.init(config);
 });
 
  beforeEach(async () => {
   await adapter.beforeEach();
-  // await device.launchApp({ permissions:{ photos: 'YES' }});
 });
 
  afterAll(async () => {
