@@ -32,17 +32,19 @@ Crop the image specified by the URI param. If URI points to a remote image, it w
 If the cropping process is successful, the resultant cropped image will be stored in the ImageStore, and the URI returned in the success callback will point to the image in the store. Remember to delete the cropped image from the ImageStore when you are done with it.
 
 ### cropData
-* `offset` - The top-left corner of the cropped image, specified in the original image's coordinate space
-* `size` - Size (dimensions) of the cropped image
-* `displaySize` (optional) - Size to which you want to scale the cropped image
-* `resizeMode` (optional) - Resizing mode to use when scaling the image
+| Property      | Required | Description                                                                                                                |
+|---------------|----------|----------------------------------------------------------------------------------------------------------------------------|
+| `offset`      | Yes      | The top-left corner of the cropped image, specified in the original image's coordinate space                               |
+| `size`        | Yes      | Size (dimensions) of the cropped image                                                                                     |
+| `displaySize` | No       | Size to which you want to scale the cropped image                                                                          |
+| `resizeMode`  | No       | Resizing mode to use when scaling the image (iOS only, android resize mode is always 'cover') **Default value**: 'contain' |
 
 ```javascript
   cropData = {
     offset: {x: number, y: number},
     size: {width: number, height: number},
     displaySize: {width: number, height: number},
-    resizeMode: 'contain/cover/stretch',
+    resizeMode: 'contain' | 'cover' | 'stretch',
   };
 ```
 
