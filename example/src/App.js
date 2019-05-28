@@ -10,19 +10,18 @@
 
 import React from 'react';
 import {
-  CameraRoll,
   Image,
   ScrollView,
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
-  PermissionsAndroid,
   Platform,
 } from 'react-native';
 import ImageEditor from '@react-native-community/image-editor';
 
-const PAGE_SIZE = 20;
+const DEFAULT_IMAGE_HEIGHT = 600;
+const DEFAULT_IMAGE_WIDTH = 1000;
 
 type ImageOffset = {|
   x: number,
@@ -41,43 +40,7 @@ type ImageCropData = {|
   resizeMode?: ?any,
 |};
 
-type State = {
-  render: boolean,
-};
-
-export default class PermissionRequestor extends React.Component<{}, State> {
-  state = {
-    render: Platform.OS === 'android' ? false : true,
-  };
-
-  async componentDidMount() {
-    if (Platform.OS === 'android') {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-        {
-          title: 'ImageEditor example app',
-          message: 'We need access to your images to test the functionality',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        this.setState({render: true});
-      }
-    }
-  }
-
-  render() {
-    if (!this.state.render) {
-      return <Text>We need permission to read your images.</Text>;
-    }
-
-    return <SquareImageCropper />;
-  }
-}
-
-class SquareImageCropper extends React.Component<
+export default class SquareImageCropper extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
@@ -97,28 +60,20 @@ class SquareImageCropper extends React.Component<
       croppedImageURI: null,
       cropError: null,
     };
-    this._fetchRandomPhoto();
   }
 
   async _fetchRandomPhoto() {
-    try {
-      const data = await CameraRoll.getPhotos({first: PAGE_SIZE});
-      if (!this._isMounted) {
-        return;
-      }
-      const edges = data.edges;
-      const edge = edges[Math.floor(Math.random() * edges.length)];
-      const randomPhoto = edge && edge.node && edge.node.image;
-      if (randomPhoto) {
-        this.setState({randomPhoto});
-      }
-    } catch (error) {
-      console.warn("Can't get a photo from camera roll", error);
-    }
+    this.setState({
+      randomPhoto: {
+        uri: `http://placeimg.com/${DEFAULT_IMAGE_WIDTH}/${DEFAULT_IMAGE_HEIGHT}/tech`,
+        height: DEFAULT_IMAGE_HEIGHT,
+        width: DEFAULT_IMAGE_WIDTH,
+      },
+    });
   }
 
-  componentWillUnmount() {
-    this._isMounted = false;
+  componentDidMount() {
+    this._fetchRandomPhoto();
   }
 
   render() {
@@ -155,7 +110,9 @@ class SquareImageCropper extends React.Component<
     }
     return (
       <View style={styles.container}>
-        <Text>Drag the image within the square to crop:</Text>
+        <Text style={styles.text} testID={'headerText'}>
+          Drag the image within the square to crop:
+        </Text>
         <ImageCropper
           image={this.state.randomPhoto}
           size={this.state.measuredSize}
@@ -177,7 +134,7 @@ class SquareImageCropper extends React.Component<
   _renderCroppedImage() {
     return (
       <View style={styles.container}>
-        <Text>Here is the cropped image:</Text>
+        <Text style={styles.text}>Here is the cropped image:</Text>
         <Image
           source={{uri: this.state.croppedImageURI}}
           style={[styles.imageCropper, this.state.measuredSize]}
@@ -307,7 +264,11 @@ class ImageCropper extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
         showsVerticalScrollIndicator={false}
         style={this.props.style}
         scrollEventThrottle={16}>
-        <Image source={this.props.image} style={this._scaledImageSize} />
+        <Image
+          testID={'testImage'}
+          source={this.props.image}
+          style={this._scaledImageSize}
+        />
       </ScrollView>
     );
   }
@@ -317,6 +278,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignSelf: 'stretch',
+    marginTop: 60,
   },
   imageCropper: {
     alignSelf: 'center',
@@ -335,5 +297,8 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '500',
+  },
+  text: {
+    color: 'white',
   },
 });
