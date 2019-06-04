@@ -13,7 +13,7 @@
 
 @interface RNCImageUtils : NSObject
 
-+ (NSString *)writeImage:(NSData *)image toPath:(NSString *)path;
++ (NSString *)writeImage:(NSData *)image toPath:(NSString *)path error:(NSError **)error;
 
 @end
 

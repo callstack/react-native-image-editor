@@ -10,9 +10,13 @@
 
 @implementation RNCImageUtils
 
-+ (id)writeImage:(id)image toPath:(id)path
++ (id)writeImage:(id)image toPath:(id)path error:(NSError **)error
 {
-    [image writeToFile:path atomically:YES];
+    BOOL res = [image writeToFile:path atomically:YES];
+    if (res == NO) {
+        *error = [NSError errorWithDomain:@"org.reactnativecommunity.imageeditor.writeToFileError" code:101 userInfo:[NSDictionary dictionary]];
+        return nil;
+    }
     NSURL *fileURL = [NSURL fileURLWithPath:path];
     return [fileURL absoluteString];
 }
