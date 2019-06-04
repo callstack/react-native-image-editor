@@ -15,6 +15,8 @@
 
 #import <React/RCTImageLoader.h>
 #import <React/RCTImageStoreManager.h>
+#import "RNCFileSystem.h"
+#import "RNCImageUtils.h"
 #if __has_include(<RCTImage/RCTImageUtils.h>)
 #import <RCTImage/RCTImageUtils.h>
 #else
@@ -28,7 +30,8 @@ RCT_EXPORT_MODULE()
 @synthesize bridge = _bridge;
 
 /**
- * Crops an image and adds the result to the image store.
+ * Crops an image and saves the result to temporary file. Consider using
+ * CameraRoll API or other third-party module to save it in gallery.
  *
  * @param imageRequest An image URL
  * @param cropData Dictionary with `offset`, `size` and `displaySize`.
@@ -69,15 +72,18 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     }
 
     // Store image
-    [self->_bridge.imageStoreManager storeImage:croppedImage withBlock:^(NSString *croppedImageTag) {
-      if (!croppedImageTag) {
-        NSString *errorMessage = @"Error storing cropped image in RCTImageStoreManager";
-        RCTLogWarn(@"%@", errorMessage);
-        errorCallback(RCTErrorWithMessage(errorMessage));
+    NSString *path = [RNCFileSystem generatePathInDirectory:[[RNCFileSystem cacheDirectoryPath] stringByAppendingPathComponent:@"ReactNative_cropped_image_"] withExtension:@".jpg"];
+
+    NSData *imageData = UIImageJPEGRepresentation(croppedImage, 1);
+    NSError *writeError;
+    NSString *uri = [RNCImageUtils writeImage:imageData toPath:path error:&writeError];
+      
+    if (writeError != nil) {
+        errorCallback(writeError);
         return;
-      }
-      successCallback(@[croppedImageTag]);
-    }];
+    }
+      
+    successCallback(@[uri]);
   }];
 }
 
