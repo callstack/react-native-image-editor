@@ -65,7 +65,7 @@ export default class SquareImageCropper extends React.Component<
   async _fetchRandomPhoto() {
     this.setState({
       randomPhoto: {
-        uri: `http://placeimg.com/${DEFAULT_IMAGE_WIDTH}/${DEFAULT_IMAGE_HEIGHT}/tech`,
+        uri: `http://placeimg.com/${DEFAULT_IMAGE_WIDTH}/${DEFAULT_IMAGE_HEIGHT}/tech?${new Date().getTime()}`,
         height: DEFAULT_IMAGE_HEIGHT,
         width: DEFAULT_IMAGE_WIDTH,
       },
