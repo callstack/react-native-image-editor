@@ -1,6 +1,6 @@
 {
   "name": "@react-native-community/image-editor",
-  "version": "1.4.0",
+  "version": "1.3.0",
   "description": "React Native Image Editing native modules for iOS & Android",
   "main": "lib/ImageEditor.js",
   "typings": "typings/index.d.ts",
@@ -80,9 +80,7 @@
   },
   "jest": {
     "preset": "react-native",
-    "modulePathIgnorePatterns": [
-      "/e2e/"
-    ]
+    "modulePathIgnorePatterns": ["/e2e/"]
   },
   "detox": {
     "test-runner": "jest",
