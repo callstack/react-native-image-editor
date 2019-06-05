@@ -150,13 +150,17 @@ export default class SquareImageCropper extends React.Component<
     );
   }
 
-  _crop() {
-    ImageEditor.cropImage(
-      this.state.randomPhoto.uri,
-      this._transformData,
-      croppedImageURI => this.setState({croppedImageURI}),
-      cropError => this.setState({cropError}),
-    );
+  async _crop() {
+    try {
+      const croppedImageURI = await ImageEditor.cropImage(
+        this.state.randomPhoto.uri,
+        this._transformData,
+      );
+
+      if (!!croppedImageURI) this.setState({croppedImageURI});
+    } catch (cropError) {
+      this.setState({cropError});
+    }
   }
 
   _reset() {

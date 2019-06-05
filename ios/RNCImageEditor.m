@@ -42,8 +42,8 @@ RCT_EXPORT_MODULE()
  */
 RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
                   cropData:(NSDictionary *)cropData
-                  successCallback:(RCTResponseSenderBlock)successCallback
-                  errorCallback:(RCTResponseErrorBlock)errorCallback)
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
   CGRect rect = {
     [RCTConvert CGPoint:cropData[@"offset"]],
@@ -52,7 +52,7 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
 
   [_bridge.imageLoader loadImageWithURLRequest:imageRequest callback:^(NSError *error, UIImage *image) {
     if (error) {
-      errorCallback(error);
+      reject(@(error.code).stringValue, error.description, error);
       return;
     }
 
@@ -79,11 +79,11 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     NSString *uri = [RNCImageUtils writeImage:imageData toPath:path error:&writeError];
       
     if (writeError != nil) {
-        errorCallback(writeError);
+        reject(@(writeError.code).stringValue, writeError.description, writeError);
         return;
     }
       
-    successCallback(@[uri]);
+    resolve(uri);
   }];
 }
 
