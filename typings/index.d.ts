@@ -35,21 +35,19 @@ declare class ImageEditor {
   /**
    * Crop the image specified by the URI param. If URI points to a remote
    * image, it will be downloaded automatically. If the image cannot be
-   * loaded/downloaded, the failure callback will be called. On Android, a
+   * loaded/downloaded, the promise will be rejected. On Android, a
    * downloaded image may be cached in external storage, a publicly accessible
    * location, if it has more available space than internal storage.
    *
    * If the cropping process is successful, the resultant cropped image
-   * will be stored in the ImageStore, and the URI returned in the success
-   * callback will point to the image in the store. Remember to delete the
-   * cropped image from the ImageStore when you are done with it.
+   * will be stored in the Cache Path, and the URI returned in the promise
+   * will point to the image in the cache path. Remember to delete the
+   * cropped image from the cache path when you are done with it.
    */
   static cropImage: (
     uri: string,
     cropData: ImageCropData,
-    success: (uri: string) => void,
-    failure: (error: Object) => void,
-  ) => void
+  ) => Promise<string>
 }
 
 export default ImageEditor

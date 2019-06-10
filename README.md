@@ -21,15 +21,25 @@ or
 
 `react-native link @react-native-community/image-editor`
 
-## Api reference
+## Usage
+
+Start by importing the library:
 
 ```javascript
-  static cropImage(uri, cropData, success, failure)
+import ImageEditor from "@react-native-community/image-editor";
 ```
 
-Crop the image specified by the URI param. If URI points to a remote image, it will be downloaded automatically. If the image cannot be loaded/downloaded, the failure callback will be called.
+### Crop image
 
-If the cropping process is successful, the resultant cropped image will be stored in the ImageStore, and the URI returned in the success callback will point to the image in the store. Remember to delete the cropped image from the ImageStore when you are done with it.
+Crop the image specified by the URI param. If URI points to a remote image, it will be downloaded automatically. If the image cannot be loaded/downloaded, the promise will be rejected.
+
+If the cropping process is successful, the resultant cropped image will be stored in the cache path, and the URI returned in the promise will point to the image in the cache path. Remember to delete the cropped image from the cache path when you are done with it.
+
+```javascript
+  ImageEditor.cropImage(uri, cropData).then(url => {
+    console.log("Cropped image uri", url);
+  })
+```
 
 ### cropData
 | Property      | Required | Description                                                                                                                |

@@ -65,7 +65,7 @@ export default class SquareImageCropper extends React.Component<
   async _fetchRandomPhoto() {
     this.setState({
       randomPhoto: {
-        uri: `http://placeimg.com/${DEFAULT_IMAGE_WIDTH}/${DEFAULT_IMAGE_HEIGHT}/tech`,
+        uri: `http://placeimg.com/${DEFAULT_IMAGE_WIDTH}/${DEFAULT_IMAGE_HEIGHT}/tech?${new Date().getTime()}`,
         height: DEFAULT_IMAGE_HEIGHT,
         width: DEFAULT_IMAGE_WIDTH,
       },
@@ -150,13 +150,19 @@ export default class SquareImageCropper extends React.Component<
     );
   }
 
-  _crop() {
-    ImageEditor.cropImage(
-      this.state.randomPhoto.uri,
-      this._transformData,
-      croppedImageURI => this.setState({croppedImageURI}),
-      cropError => this.setState({cropError}),
-    );
+  async _crop() {
+    try {
+      const croppedImageURI = await ImageEditor.cropImage(
+        this.state.randomPhoto.uri,
+        this._transformData,
+      );
+
+      if (croppedImageURI) {
+        this.setState({croppedImageURI});
+      }
+    } catch (cropError) {
+      this.setState({cropError});
+    }
   }
 
   _reset() {
