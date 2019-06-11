@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -56,7 +57,10 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
   protected static final String NAME = "RNCImageEditor";
 
   private static final List<String> LOCAL_URI_PREFIXES = Arrays.asList(
-      "file://", "content://");
+          ContentResolver.SCHEME_FILE,
+          ContentResolver.SCHEME_CONTENT,
+          ContentResolver.SCHEME_ANDROID_RESOURCE
+  );
 
   private static final String TEMP_FILE_PREFIX = "ReactNative_cropped_image_";
 
