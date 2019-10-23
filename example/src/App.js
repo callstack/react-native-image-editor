@@ -20,8 +20,8 @@ import {
 } from 'react-native';
 import ImageEditor from '@react-native-community/image-editor';
 
-const DEFAULT_IMAGE_HEIGHT = 600;
-const DEFAULT_IMAGE_WIDTH = 1000;
+const DEFAULT_IMAGE_HEIGHT = 720;
+const DEFAULT_IMAGE_WIDTH = 1080;
 
 type ImageOffset = {|
   x: number,
