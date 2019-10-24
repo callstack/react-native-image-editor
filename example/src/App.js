@@ -20,8 +20,8 @@ import {
 } from 'react-native';
 import ImageEditor from '@react-native-community/image-editor';
 
-const DEFAULT_IMAGE_HEIGHT = 600;
-const DEFAULT_IMAGE_WIDTH = 1000;
+const DEFAULT_IMAGE_HEIGHT = 720;
+const DEFAULT_IMAGE_WIDTH = 1080;
 
 type ImageOffset = {|
   x: number,
@@ -55,25 +55,15 @@ export default class SquareImageCropper extends React.Component<
     super(props);
     this._isMounted = true;
     this.state = {
-      randomPhoto: null,
+      photo: {
+        uri: `https://source.unsplash.com/2Ts5HnA67k8/${DEFAULT_IMAGE_WIDTH}x${DEFAULT_IMAGE_HEIGHT}`,
+        height: DEFAULT_IMAGE_HEIGHT,
+        width: DEFAULT_IMAGE_WIDTH,
+      },
       measuredSize: null,
       croppedImageURI: null,
       cropError: null,
     };
-  }
-
-  async _fetchRandomPhoto() {
-    this.setState({
-      randomPhoto: {
-        uri: `http://placeimg.com/${DEFAULT_IMAGE_WIDTH}/${DEFAULT_IMAGE_HEIGHT}/tech?${new Date().getTime()}`,
-        height: DEFAULT_IMAGE_HEIGHT,
-        width: DEFAULT_IMAGE_WIDTH,
-      },
-    });
-  }
-
-  componentDidMount() {
-    this._fetchRandomPhoto();
   }
 
   render() {
@@ -101,7 +91,7 @@ export default class SquareImageCropper extends React.Component<
   }
 
   _renderImageCropper() {
-    if (!this.state.randomPhoto) {
+    if (!this.state.photo) {
       return <View style={styles.container} />;
     }
     let error = null;
@@ -114,7 +104,7 @@ export default class SquareImageCropper extends React.Component<
           Drag the image within the square to crop:
         </Text>
         <ImageCropper
-          image={this.state.randomPhoto}
+          image={this.state.photo}
           size={this.state.measuredSize}
           style={[styles.imageCropper, this.state.measuredSize]}
           onTransformDataChange={data => (this._transformData = data)}
@@ -153,7 +143,7 @@ export default class SquareImageCropper extends React.Component<
   async _crop() {
     try {
       const croppedImageURI = await ImageEditor.cropImage(
-        this.state.randomPhoto.uri,
+        this.state.photo.uri,
         this._transformData,
       );
 
@@ -167,11 +157,9 @@ export default class SquareImageCropper extends React.Component<
 
   _reset() {
     this.setState({
-      randomPhoto: null,
       croppedImageURI: null,
       cropError: null,
     });
-    this._fetchRandomPhoto();
   }
 }
 
