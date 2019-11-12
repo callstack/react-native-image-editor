@@ -72,18 +72,53 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     }
 
     // Store image
-    NSString *path = [RNCFileSystem generatePathInDirectory:[[RNCFileSystem cacheDirectoryPath] stringByAppendingPathComponent:@"ReactNative_cropped_image_"] withExtension:@".jpg"];
-    NSData *imageData = UIImageJPEGRepresentation(croppedImage, 0);
+    NSString *mimeType = [self  contentTypeForImage:croppedImage];
+    NSString *path = NULL;
+    NSData *imageData = NULL;
+    
+    if([mimeType isEqualToString:@"image/png"]){
+      path = [RNCFileSystem generatePathInDirectory:[[RNCFileSystem cacheDirectoryPath] stringByAppendingPathComponent:@"ReactNative_cropped_image_"] withExtension:@".png"];
+      imageData = UIImagePNGRepresentation(croppedImage);
+    }
+    else{
+      path = [RNCFileSystem generatePathInDirectory:[[RNCFileSystem cacheDirectoryPath] stringByAppendingPathComponent:@"ReactNative_cropped_image_"] withExtension:@".jpg"];
+      imageData = UIImageJPEGRepresentation(croppedImage, 1);
+    }
+
     NSError *writeError;
     NSString *uri = [RNCImageUtils writeImage:imageData toPath:path error:&writeError];
       
     if (writeError != nil) {
-        reject(@(writeError.code).stringValue, writeError.description, writeError);
-        return;
+      reject(@(writeError.code).stringValue, writeError.description, writeError);
+      return;
     }
       
     resolve(uri);
   }];
 }
+
+
+//If you have NSData for the image file, then you can guess at the content type by looking at the first byte:
+
+- (NSString *)contentTypeForImage:(UIImage *)image {
+  CGDataProviderRef provider = CGImageGetDataProvider([image CGImage]);
+  NSData* data = (id)CFBridgingRelease(CGDataProviderCopyData(provider));
+  uint8_t c;
+  [data getBytes:&c length:1];
+
+  switch (c) {
+  case 0xFF:
+      return @"image/jpeg";
+  case 0x89:
+      return @"image/png";
+  case 0x47:
+      return @"image/gif";
+  case 0x49:
+  case 0x4D:
+      return @"image/tiff";
+  }
+  return nil;
+}
+
 
 @end
