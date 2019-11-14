@@ -49,6 +49,9 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     [RCTConvert CGPoint:cropData[@"offset"]],
     [RCTConvert CGSize:cropData[@"size"]]
   };
+  NSURL *url = [imageRequest URL];
+  NSString *urlPath = [url path];
+  NSString *extension = [urlPath pathExtension];
 
   [_bridge.imageLoader loadImageWithURLRequest:imageRequest callback:^(NSError *error, UIImage *image) {
     if (error) {
@@ -72,17 +75,17 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     }
 
     // Store image
-    NSString *mimeType = [self  contentTypeForImage:croppedImage];
     NSString *path = NULL;
     NSData *imageData = NULL;
     
-    if([mimeType isEqualToString:@"image/png"]){
-      path = [RNCFileSystem generatePathInDirectory:[[RNCFileSystem cacheDirectoryPath] stringByAppendingPathComponent:@"ReactNative_cropped_image_"] withExtension:@".png"];
+    if([extension isEqualToString:@"png"]){
       imageData = UIImagePNGRepresentation(croppedImage);
+      path = [RNCFileSystem generatePathInDirectory:[[RNCFileSystem cacheDirectoryPath] stringByAppendingPathComponent:@"ReactNative_cropped_image_"] withExtension:@".png"];
     }
     else{
-      path = [RNCFileSystem generatePathInDirectory:[[RNCFileSystem cacheDirectoryPath] stringByAppendingPathComponent:@"ReactNative_cropped_image_"] withExtension:@".jpg"];
+
       imageData = UIImageJPEGRepresentation(croppedImage, 1);
+      path = [RNCFileSystem generatePathInDirectory:[[RNCFileSystem cacheDirectoryPath] stringByAppendingPathComponent:@"ReactNative_cropped_image_"] withExtension:@".jpg"];
     }
 
     NSError *writeError;
@@ -96,29 +99,5 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     resolve(uri);
   }];
 }
-
-
-//If you have NSData for the image file, then you can guess at the content type by looking at the first byte:
-
-- (NSString *)contentTypeForImage:(UIImage *)image {
-  CGDataProviderRef provider = CGImageGetDataProvider([image CGImage]);
-  NSData* data = (id)CFBridgingRelease(CGDataProviderCopyData(provider));
-  uint8_t c;
-  [data getBytes:&c length:1];
-
-  switch (c) {
-  case 0xFF:
-      return @"image/jpeg";
-  case 0x89:
-      return @"image/png";
-  case 0x47:
-      return @"image/gif";
-  case 0x49:
-  case 0x4D:
-      return @"image/tiff";
-  }
-  return nil;
-}
-
 
 @end
