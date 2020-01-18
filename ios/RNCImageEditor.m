@@ -45,10 +45,14 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  CGRect rect = {
-    [RCTConvert CGPoint:cropData[@"offset"]],
-    [RCTConvert CGSize:cropData[@"size"]]
-  };
+  float screenScale = [[UIScreen mainScreen] scale];
+  float x = [RCTConvert float:cropData[@"offset"][@"x"]] * screenScale;
+  float y = [RCTConvert float:cropData[@"offset"][@"y"]] * screenScale;
+  float width = [RCTConvert float:cropData[@"size"][@"width"]] * screenScale;
+  float height = [RCTConvert float:cropData[@"size"][@"height"]] * screenScale;
+  CGPoint origin = { x, y };
+  CGSize size = { width, height };
+  CGRect rect = { origin, size };
   NSURL *url = [imageRequest URL];
   NSString *urlPath = [url path];
   NSString *extension = [urlPath pathExtension];
