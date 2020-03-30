@@ -53,7 +53,7 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
   NSString *urlPath = [url path];
   NSString *extension = [urlPath pathExtension];
 
-  [_bridge.imageLoader loadImageWithURLRequest:imageRequest callback:^(NSError *error, UIImage *image) {
+  [[_bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES] loadImageWithURLRequest:imageRequest callback:^(NSError *error, UIImage *image) {
     if (error) {
       reject(@(error.code).stringValue, error.description, error);
       return;
