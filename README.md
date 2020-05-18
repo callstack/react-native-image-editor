@@ -18,6 +18,10 @@ or
 
 `npm install @react-native-community/image-editor --save`
 
+### Install Pods
+
+`npx pod-install`
+
 ### Link
 
 `react-native link @react-native-community/image-editor`
