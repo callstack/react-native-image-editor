@@ -64,9 +64,6 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
 
   private static final String TEMP_FILE_PREFIX = "ReactNative_cropped_image_";
 
-  /** Compress quality of the output file. */
-  private static final int COMPRESS_QUALITY = 90;
-
   @SuppressLint("InlinedApi") private static final String[] EXIF_ATTRIBUTES = new String[] {
     ExifInterface.TAG_APERTURE,
     ExifInterface.TAG_DATETIME,
@@ -190,6 +187,10 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
         (int) size.getDouble("width"),
         (int) size.getDouble("height"),
         promise);
+    if (options.hasKey("quality")) {
+      double quality =  options.getDouble("quality");
+      cropTask.setCompressionQuality(quality);
+    }
     if (options.hasKey("displaySize")) {
       ReadableMap targetSize = options.getMap("displaySize");
       cropTask.setTargetSize(
@@ -208,6 +209,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
     final int mHeight;
     int mTargetWidth = 0;
     int mTargetHeight = 0;
+    double mTargetQuality = 0.9;
     final Promise mPromise;
 
     private CropTask(
@@ -230,6 +232,10 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
       mWidth = width;
       mHeight = height;
       mPromise = promise;
+    }
+
+    public void setCompressionQuality(double quality){
+      mTargetQuality = quality;
     }
 
     public void setTargetSize(int width, int height) {
@@ -276,7 +282,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
         }
 
         File tempFile = createTempFile(mContext, mimeType);
-        writeCompressedBitmapToFile(cropped, mimeType, tempFile);
+        writeCompressedBitmapToFile(cropped, mimeType, tempFile, mTargetQuality);
 
         if (mimeType.equals("image/jpeg")) {
           copyExif(mContext, Uri.parse(mUri), tempFile);
@@ -449,11 +455,13 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
     return Bitmap.CompressFormat.JPEG;
   }
 
-  private static void writeCompressedBitmapToFile(Bitmap cropped, String mimeType, File tempFile)
+  private static void writeCompressedBitmapToFile(Bitmap cropped, String mimeType, File tempFile, double compressQuality)
       throws IOException {
     OutputStream out = new FileOutputStream(tempFile);
     try {
-      cropped.compress(getCompressFormatForType(mimeType), COMPRESS_QUALITY, out);
+      int quality  = (int)(compressQuality * 100);
+
+      cropped.compress(getCompressFormatForType(mimeType), quality, out);
     } finally {
       if (out != null) {
         out.close();

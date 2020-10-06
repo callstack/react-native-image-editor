@@ -74,28 +74,33 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
       croppedImage = RCTTransformImage(croppedImage, targetSize, image.scale, transform);
     }
 
+    CGFloat compressionQuality = 1;
+    if(cropData[@"quality"]){
+        compressionQuality = [RCTConvert CGFloat:cropData[@"quality"]];
+    }
+
     // Store image
     NSString *path = NULL;
     NSData *imageData = NULL;
-    
+
     if([extension isEqualToString:@"png"]){
       imageData = UIImagePNGRepresentation(croppedImage);
       path = [RNCFileSystem generatePathInDirectory:[[RNCFileSystem cacheDirectoryPath] stringByAppendingPathComponent:@"ReactNative_cropped_image_"] withExtension:@".png"];
     }
     else{
 
-      imageData = UIImageJPEGRepresentation(croppedImage, 1);
+      imageData = UIImageJPEGRepresentation(croppedImage, compressionQuality);
       path = [RNCFileSystem generatePathInDirectory:[[RNCFileSystem cacheDirectoryPath] stringByAppendingPathComponent:@"ReactNative_cropped_image_"] withExtension:@".jpg"];
     }
 
     NSError *writeError;
     NSString *uri = [RNCImageUtils writeImage:imageData toPath:path error:&writeError];
-      
+
     if (writeError != nil) {
       reject(@(writeError.code).stringValue, writeError.description, writeError);
       return;
     }
-      
+
     resolve(uri);
   }];
 }

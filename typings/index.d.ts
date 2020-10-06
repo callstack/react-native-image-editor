@@ -29,6 +29,10 @@ export type ImageCropData = {
    * `displaySize` param is not specified, this has no effect.
    */
   resizeMode?: $Maybe<"contain" | "cover" | "stretch">,
+  /**
+   * (Optional) Compression quality jpg images (number from 0 to 1).
+   */
+  quality?: $Maybe<number>,
 };
 
 declare class ImageEditor {

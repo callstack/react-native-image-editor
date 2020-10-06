@@ -53,6 +53,7 @@ If the cropping process is successful, the resultant cropped image will be store
 | `size`        | Yes      | Size (dimensions) of the cropped image                                                                                     |
 | `displaySize` | No       | Size to which you want to scale the cropped image                                                                          |
 | `resizeMode`  | No       | Resizing mode to use when scaling the image (iOS only, android resize mode is always 'cover') **Default value**: 'contain' |
+| `quality`     | No       | Compression quality jpg images (from `0` to `1`) **Default value**:  (iOS: 1), (Android: 0.9) |
 
 ```javascript
   cropData = {
