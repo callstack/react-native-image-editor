@@ -52,7 +52,7 @@ If the cropping process is successful, the resultant cropped image will be store
 | `offset`      | Yes      | The top-left corner of the cropped image, specified in the original image's coordinate space                               |
 | `size`        | Yes      | Size (dimensions) of the cropped image                                                                                     |
 | `displaySize` | No       | Size to which you want to scale the cropped image                                                                          |
-| `resizeMode`  | No       | Resizing mode to use when scaling the image (iOS only, android resize mode is always 'cover') **Default value**: 'contain' |
+| `resizeMode`  | No       | Resizing mode to use when scaling the image ('stretch' resize mode is iOS only) **Default value**: 'contain' |
 
 ```javascript
   cropData = {
