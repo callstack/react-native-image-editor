@@ -1,5 +1,5 @@
 /**
- * @lint-ignore-every XPLATJSCOPYRIGHT1
+ * @flow
  */
 
 import 'react-native';
