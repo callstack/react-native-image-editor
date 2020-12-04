@@ -145,7 +145,6 @@ export default class SquareImageCropper extends React.Component<
         this.state.photo.uri,
         this._transformData,
       );
-
       if (croppedImageURI) {
         this.setState({croppedImageURI});
       }

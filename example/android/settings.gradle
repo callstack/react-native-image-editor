@@ -1,7 +1,6 @@
-rootProject.name = 'ImageEditorExample'
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings, '../..')
+rootProject.name = 'ReactNativeImageEditorExample'
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'
-include ':rnImageEditor'
-project(':rnImageEditor').projectDir = new File(rootProject.projectDir, '../../android')
-include ':detox'
-project(':detox').projectDir = new File(rootProject.projectDir, '../../node_modules/detox/android/detox')
+
+include ':reactnativeimageeditor'
+project(':reactnativeimageeditor').projectDir = new File(rootProject.projectDir, '../../android')
