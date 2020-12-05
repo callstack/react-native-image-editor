@@ -27,17 +27,17 @@
     "release": "release-it",
     "bootstrap": "yarn && yarn --cwd=example && cd example/ios && pod install --silent",
     "clean:packages":  "rimraf example/ios/Pods && rimraf example/node_modules && rimraf node_modules",
-    "test:detox:android:test:debug": "detox test -c android.emu.debug",
-    "test:detox:android:test:release": "detox test -c android.emu.release",
-    "test:detox:android:build:debug": "detox build -c android.emu.debug",
-    "test:detox:android:build:release": "detox build -c android.emu.release",
-    "test:detox:android:bundle:release": "mkdir -p .tmp && react-native bundle --max-workers 4 --platform android --dev false --entry-file example/index.js --bundle-output .tmp/android-bundle.js",
-    "test:detox:ios:test:debug": "detox test -c ios.sim.debug",
-    "test:detox:ios:test:release": "detox test -c ios.sim.release",
-    "test:detox:ios:build:debug": "detox build -c ios.sim.debug",
-    "test:detox:ios:build:release": "detox build -c ios.sim.release",
-    "test:detox:ios:bundle:release": "mkdir -p .tmp && react-native bundle --max-workers 4 --platform ios --dev false --entry-file example/index.js --bundle-output .tmp/ios-bundle.js",
-    "test:detox:clean": "rimraf example/android/build && rimraf example/android/app/build && rimraf example/android/.gradle && rimraf example/ios/build"
+    "test:detox:android:test:debug": "yarn example \"test:android:test:debug\"",
+    "test:detox:android:test:release": "yarn example \"test:android:test:release\"",
+    "test:detox:android:build:debug": "yarn example \"test:android:build:debug\"",
+    "test:detox:android:build:release": "yarn example \"test:android:build:release\"",
+    "test:detox:android:bundle:release": "yarn example \"test:android:bundle:release\"",
+    "test:detox:ios:test:debug": "yarn example \"test:ios:test:debug\"",
+    "test:detox:ios:test:release": "yarn example \"test:ios:test:release\"",
+    "test:detox:ios:build:debug": "yarn example \"test:ios:build:debug\"",
+    "test:detox:ios:build:release": "yarn example \"test:ios:build:release\"",
+    "test:detox:ios:bundle:release": "yarn example \"test:ios:bundle:release\"",
+    "test:detox:clean": "yarn example \"test:clean\""
   },
   "peerDependencies": {
     "react": "16.13.1",
@@ -86,36 +86,7 @@
       "/e2e/"
     ]
   },
-  "detox": {
-    "test-runner": "jest",
-    "runner-config": "example/e2e/config.json",
-    "configurations": {
-      "ios.sim.debug": {
-        "binaryPath": "example/ios/build/Build/Products/Debug-iphonesimulator/ImageEditorExample.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -project example/ios/ImageEditorExample.xcodeproj -destination 'platform=iOS Simulator,name=iPhone X' -scheme ImageEditorExample -parallelizeTargets -configuration Debug -derivedDataPath example/ios/build  -UseModernBuildSystem=YES",
-        "type": "ios.simulator",
-        "name": "iPhone X"
-      },
-      "ios.sim.release": {
-        "binaryPath": "example/ios/build/Build/Products/Release-iphonesimulator/ImageEditorExample.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -project example/ios/ImageEditorExample.xcodeproj -destination 'platform=iOS Simulator,name=iPhone X' -scheme ImageEditorExample -parallelizeTargets -configuration Release -derivedDataPath example/ios/build  -UseModernBuildSystem=YES",
-        "type": "ios.simulator",
-        "name": "iPhone X"
-      },
-      "android.emu.debug": {
-        "binaryPath": "example/android/app/build/outputs/apk/debug/app-debug.apk",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && pushd example/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && popd",
-        "type": "android.emulator",
-        "name": "TestingAVD"
-      },
-      "android.emu.release": {
-        "binaryPath": "example/android/app/build/outputs/apk/release/app-release.apk",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && pushd example/android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && popd",
-        "type": "android.emulator",
-        "name": "TestingAVD"
-      }
-    }
-  },
+
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
