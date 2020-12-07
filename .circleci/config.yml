@@ -13,6 +13,7 @@ jobs:
           paths: .
   analyse:
     executor: rn/linux_js
+    node_version: '10'
     steps:
       - attach_workspace:
           at: .
