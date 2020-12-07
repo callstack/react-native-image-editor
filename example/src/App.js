@@ -70,7 +70,7 @@ export default class SquareImageCropper extends React.Component<
       return (
         <View
           style={styles.container}
-          onLayout={event => {
+          onLayout={(event) => {
             const measuredWidth = event.nativeEvent.layout.width;
             if (!measuredWidth) {
               return;
@@ -106,7 +106,7 @@ export default class SquareImageCropper extends React.Component<
           image={this.state.photo}
           size={this.state.measuredSize}
           style={[styles.imageCropper, this.state.measuredSize]}
-          onTransformDataChange={data => (this._transformData = data)}
+          onTransformDataChange={(data) => (this._transformData = data)}
         />
         <TouchableHighlight
           style={styles.cropButtonTouchable}
