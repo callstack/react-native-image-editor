@@ -22,7 +22,7 @@
   "scripts": {
     "start": "yarn --cwd=example start",
     "test:flow": "flow check",
-    "test:eslint": "eslint \"lib/**/*.js\" \"example/**/*.js\"",
+    "test:eslint": "eslint lib/**/*.js example/**/*.js",
     "example": "yarn --cwd example",
     "release": "release-it",
     "bootstrap": "yarn && yarn --cwd=example && cd example/ios && pod install --silent",
