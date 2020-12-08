@@ -19,9 +19,7 @@ jobs:
       - attach_workspace:
           at: .
       - rn/yarn_install
-      - run:
-          name: Installing example app
-          command: cd example && yarn install
+      - run: cd example && yarn install
       - run:
           name: Lint JS Code (ESLint)
           command: yarn run test:eslint
