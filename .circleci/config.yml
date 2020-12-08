@@ -21,7 +21,7 @@ jobs:
       - rn/yarn_install
       - run:
           name: Installing example app
-          command: mkdir example && cd example && yarn install
+          command: cd example && yarn install
       - run:
           name: Lint JS Code (ESLint)
           command: yarn run test:eslint
