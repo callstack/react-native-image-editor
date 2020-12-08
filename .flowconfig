@@ -22,9 +22,12 @@ node_modules/warning/.*
 
 ; Flow doesn't support platforms
 .*/Libraries/Utilities/HMRLoadingView.js
+.*/Libraries/StyleSheet/PlatformColorValueTypesIOS.js
+.*/Libraries/Utilities/LoadingView.js
 
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
+.*/node_modules/react-native/.*
 
 [include]
 
