@@ -36,7 +36,7 @@
     "test:detox:ios:test:release": "detox test -c ios.sim.release",
     "test:detox:ios:build:debug": "detox build -c ios.sim.debug",
     "test:detox:ios:build:release": "detox build -c ios.sim.release",
-    "test:detox:ios:bundle:release": "yarn example \"test:ios:bundle:release\"",
+    "test:detox:ios:bundle:release": "mkdir -p .tmp && react-native bundle --max-workers 4 --platform ios --dev false --entry-file example/index.js --bundle-output .tmp/ios-bundle.js",
     "test:detox:clean": "yarn example \"test:clean\""
   },
   "peerDependencies": {

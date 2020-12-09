@@ -6,7 +6,6 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "test:ios:bundle:release": "mkdir -p .tmp && react-native bundle --max-workers 4 --platform ios --dev false --entry-file example/index.js --bundle-output .tmp/ios-bundle.js",
     "test:clean": "rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build"
   },
   "dependencies": {
@@ -17,37 +16,6 @@
     "@babel/core": "^7.8.4",
     "@babel/runtime": "^7.8.4",
     "babel-plugin-module-resolver": "^4.0.0",
-    "metro-react-native-babel-preset": "^0.59.0",
-    "detox": "^17.14.1"
-  },
-  "detox": {
-    "test-runner": "jest",
-    "runner-config": "e2e/config.json",
-    "configurations": {
-      "ios.sim.debug": { 
-        "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/ReactNativeImageEditorExample.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/ReactNativeImageEditorExample.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 12' -scheme ReactNativeImageEditorExample -parallelizeTargets -configuration Debug -derivedDataPath ios/build  -UseModernBuildSystem=YES",
-        "type": "ios.simulator",
-        "name": "iPhone 12"
-      },
-      "ios.sim.release": {
-        "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/ReactNativeImageEditorExample.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/ReactNativeImageEditorExample.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 12' -scheme ReactNativeImageEditorExample -parallelizeTargets -configuration Release -derivedDataPath ios/build  -UseModernBuildSystem=YES",
-        "type": "ios.simulator",
-        "name": "iPhone 12"
-      },
-      "android.emu.debug": {
-        "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && pushd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && popd",
-        "type": "android.emulator",
-        "name": "TestingAVD"
-      },
-      "android.emu.release": {
-        "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && pushd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && popd",
-        "type": "android.emulator",
-        "name": "TestingAVD"
-      }
-    }
+    "metro-react-native-babel-preset": "^0.59.0"
   }
 }
