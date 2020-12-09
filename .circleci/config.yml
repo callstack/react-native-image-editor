@@ -5,7 +5,9 @@ orbs:
 
 jobs:
   checkout_code:
-    executor: rn/linux_js
+    executor: 
+      name: rn/linux_js
+      node_version: '10'
     steps:
       - checkout
       - persist_to_workspace:
