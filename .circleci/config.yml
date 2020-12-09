@@ -100,7 +100,7 @@ workflows:
           project_type: workspace
           project_path: "example/ios/ReactNativeImageEditorExample.xcworkspace"
           derived_data_path: "example/ios/build"
-          device: "iPhone X"
+          device: "iPhone 12"
           build_configuration: "Release"
           scheme: "ReactNativeImageEditorExample"
           detox_configuration: "ios.sim.release"
