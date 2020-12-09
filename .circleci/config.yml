@@ -74,7 +74,7 @@ workflows:
       - install-dependencies:
           requires:
             - checkout_code
-      - analyse_js:
+      - analyse:
           requires:
             - install-dependencies
       - rn/android_build:
