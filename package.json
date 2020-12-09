@@ -98,15 +98,15 @@
     "configurations": {
       "ios.sim.debug": { 
         "binaryPath": "example/ios/build/Build/Products/Debug-iphonesimulator/ReactNativeImageEditorExample.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace example/ios/ReactNativeImageEditorExample.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 12' -scheme ReactNativeImageEditorExample -parallelizeTargets -configuration Debug -derivedDataPath example/ios/build  -UseModernBuildSystem=YES",
+        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace example/ios/ReactNativeImageEditorExample.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 11' -scheme ReactNativeImageEditorExample -parallelizeTargets -configuration Debug -derivedDataPath example/ios/build  -UseModernBuildSystem=YES",
         "type": "ios.simulator",
-        "name": "iPhone 12"
+        "name": "iPhone 11"
       },
       "ios.sim.release": {
         "binaryPath": "example/ios/build/Build/Products/Release-iphonesimulator/ReactNativeImageEditorExample.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace example/ios/ReactNativeImageEditorExample.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 12' -scheme ReactNativeImageEditorExample -parallelizeTargets -configuration Release -derivedDataPath example/ios/build  -UseModernBuildSystem=YES",
+        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace example/ios/ReactNativeImageEditorExample.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 11' -scheme ReactNativeImageEditorExample -parallelizeTargets -configuration Release -derivedDataPath example/ios/build  -UseModernBuildSystem=YES",
         "type": "ios.simulator",
-        "name": "iPhone 12"
+        "name": "iPhone 11"
       },
       "android.emu.debug": {
         "binaryPath": "example/android/app/build/outputs/apk/debug/app-debug.apk",

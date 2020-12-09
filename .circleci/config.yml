@@ -12,7 +12,8 @@ jobs:
       - checkout
       - persist_to_workspace:
           root: .
-          paths: .
+          paths: 
+            - .
   install-dependencies:
     executor: 
       name: rn/linux_js
@@ -100,10 +101,11 @@ workflows:
           project_type: workspace
           project_path: "example/ios/ReactNativeImageEditorExample.xcworkspace"
           derived_data_path: "example/ios/build"
-          device: "iPhone 12"
-          build_configuration: "Release"
+          pod_install_directory: "example/ios"
+          device: "iPhone 11"
+          build_configuration: "Debug"
           scheme: "ReactNativeImageEditorExample"
-          detox_configuration: "ios.sim.release"
+          detox_configuration: "ios.sim.debug"
           detox_loglevel: "trace"
           requires:
             - analyse
