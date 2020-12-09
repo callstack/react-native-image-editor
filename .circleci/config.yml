@@ -52,8 +52,6 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - rn/yarn_install
-      - run: cd example && yarn install
       - run:
           name: Lint JS Code (ESLint)
           command: yarn run test:eslint
