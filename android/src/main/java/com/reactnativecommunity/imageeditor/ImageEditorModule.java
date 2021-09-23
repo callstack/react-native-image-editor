@@ -170,6 +170,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
   public void cropImage(
       String uri,
       ReadableMap options,
+      boolean useExternalCache,
       Promise promise) {
     ReadableMap offset = options.hasKey("offset") ? options.getMap("offset") : null;
     ReadableMap size = options.hasKey("size") ? options.getMap("size") : null;
@@ -189,6 +190,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
         (int) offset.getDouble("y"),
         (int) size.getDouble("width"),
         (int) size.getDouble("height"),
+        useExternalCache,
         promise);
     if (options.hasKey("displaySize")) {
       ReadableMap targetSize = options.getMap("displaySize");
@@ -206,6 +208,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
     final int mY;
     final int mWidth;
     final int mHeight;
+    final boolean mUseExternalCache;
     int mTargetWidth = 0;
     int mTargetHeight = 0;
     final Promise mPromise;
@@ -217,6 +220,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
         int y,
         int width,
         int height,
+        boolean useExternalCache,
         Promise promise) {
       super(context);
       if (x < 0 || y < 0 || width <= 0 || height <= 0) {
@@ -230,6 +234,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
       mWidth = width;
       mHeight = height;
       mPromise = promise;
+      mUseExternalCache = useExternalCache;
     }
 
     public void setTargetSize(int width, int height) {
@@ -275,7 +280,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
           throw new IOException("Could not determine MIME type");
         }
 
-        File tempFile = createTempFile(mContext, mimeType);
+        File tempFile = createTempFile(mContext, mimeType, mUseExternalCache);
         writeCompressedBitmapToFile(cropped, mimeType, tempFile);
 
         if (mimeType.equals("image/jpeg")) {
@@ -467,23 +472,23 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
    *
    * @param mimeType the MIME type of the file to create (image/*)
    */
-  private static File createTempFile(Context context, @Nullable String mimeType)
+  private static File createTempFile(Context context, @Nullable String mimeType, boolean useExternalCache)
       throws IOException {
     File externalCacheDir = context.getExternalCacheDir();
     File internalCacheDir = context.getCacheDir();
     File cacheDir;
-    if (externalCacheDir == null && internalCacheDir == null) {
+    if ((useExternalCache && externalCacheDir == null) && internalCacheDir == null) {
       throw new IOException("No cache directory available");
     }
-    if (externalCacheDir == null) {
-      cacheDir = internalCacheDir;
+
+    cacheDir = (!useExternalCache) ? internalCacheDir : (externalCacheDir != null) && (internalCacheDir != null) ? ( externalCacheDir.getFreeSpace() > internalCacheDir.getFreeSpace() ?
+          externalCacheDir : internalCacheDir ) : internalCacheDir;
+
+    if (cacheDir == null) {
+      throw new IOException("Could not access a cache directory");
     }
-    else if (internalCacheDir == null) {
-      cacheDir = externalCacheDir;
-    } else {
-      cacheDir = externalCacheDir.getFreeSpace() > internalCacheDir.getFreeSpace() ?
-          externalCacheDir : internalCacheDir;
-    }
+
+
     return File.createTempFile(TEMP_FILE_PREFIX, getFileExtensionForType(mimeType), cacheDir);
   }
 

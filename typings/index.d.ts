@@ -47,6 +47,7 @@ declare class ImageEditor {
   static cropImage: (
     uri: string,
     cropData: ImageCropData,
+    useExternalCache?: boolean
   ) => Promise<string>
 }
 
