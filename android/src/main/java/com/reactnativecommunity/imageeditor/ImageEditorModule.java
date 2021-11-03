@@ -9,6 +9,8 @@ package com.reactnativecommunity.imageeditor;
 
 import javax.annotation.Nullable;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
@@ -241,6 +243,16 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
       mTargetHeight = height;
     }
 
+    private int getOrientation() throws IOException {
+      File oldFile = getFileFromUri(mContext, Uri.parse(mUri));
+      if (oldFile != null) {
+        ExifInterface exif = new ExifInterface(oldFile.getAbsolutePath());
+        return exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, -1);
+      }
+
+      return -1;
+    }
+
     private InputStream openBitmapInputStream() throws IOException {
       InputStream stream;
       if (isLocalUri(mUri)) {
@@ -251,6 +263,28 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
       }
       if (stream == null) {
         throw new IOException("Cannot open bitmap: " + mUri);
+      } else {
+        Bitmap bmp = BitmapFactory.decodeStream(stream);
+        int orientation = getOrientation();
+
+        try {
+          Matrix matrix = new Matrix();
+          if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            matrix.postRotate(90);
+          }
+          else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            matrix.postRotate(180);
+          }
+          else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            matrix.postRotate(270);
+          }
+          bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
+        } finally {
+          ByteArrayOutputStream bos = new ByteArrayOutputStream();
+          bmp.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+
+          stream = new ByteArrayInputStream(bos.toByteArray());
+        }
       }
       return stream;
     }
@@ -288,6 +322,23 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
       }
     }
 
+    private Bitmap rotateCropResult(Bitmap cropped) throws IOException {
+      Matrix matrix = new Matrix();
+      int orientation = getOrientation();
+
+      if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
+        matrix.postRotate(-90);
+      }
+      else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
+        matrix.postRotate(-180);
+      }
+      else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
+        matrix.postRotate(-270);
+      }
+
+      return Bitmap.createBitmap(cropped, 0, 0, cropped.getWidth(), cropped.getHeight(), matrix, true);
+    }
+
     /**
      * Reads and crops the bitmap.
      * @param outOptions Bitmap options, useful to determine {@code outMimeType}.
@@ -299,7 +350,10 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
       BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(inputStream, false);
       try {
         Rect rect = new Rect(mX, mY, mX + mWidth, mY + mHeight);
-        return decoder.decodeRegion(rect, outOptions);
+        Bitmap outBmp = decoder.decodeRegion(rect, outOptions);
+        outBmp = rotateCropResult(outBmp);
+
+        return outBmp;
       } finally {
         if (inputStream != null) {
           inputStream.close();
@@ -373,7 +427,10 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
       scaleMatrix.setScale(cropScale, cropScale);
       boolean filter = true;
 
-      return Bitmap.createBitmap(bitmap, cropX, cropY, cropWidth, cropHeight, scaleMatrix, filter);
+      bitmap = Bitmap.createBitmap(bitmap, cropX, cropY, cropWidth, cropHeight, scaleMatrix, filter);
+      bitmap = rotateCropResult(bitmap);
+
+      return bitmap;
     }
   }
 
