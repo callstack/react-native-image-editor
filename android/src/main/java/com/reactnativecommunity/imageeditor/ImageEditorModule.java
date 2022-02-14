@@ -68,31 +68,31 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
   private static final int COMPRESS_QUALITY = 90;
 
   @SuppressLint("InlinedApi") private static final String[] EXIF_ATTRIBUTES = new String[] {
-    ExifInterface.TAG_APERTURE,
-    ExifInterface.TAG_DATETIME,
-    ExifInterface.TAG_DATETIME_DIGITIZED,
-    ExifInterface.TAG_EXPOSURE_TIME,
-    ExifInterface.TAG_FLASH,
-    ExifInterface.TAG_FOCAL_LENGTH,
-    ExifInterface.TAG_GPS_ALTITUDE,
-    ExifInterface.TAG_GPS_ALTITUDE_REF,
-    ExifInterface.TAG_GPS_DATESTAMP,
-    ExifInterface.TAG_GPS_LATITUDE,
-    ExifInterface.TAG_GPS_LATITUDE_REF,
-    ExifInterface.TAG_GPS_LONGITUDE,
-    ExifInterface.TAG_GPS_LONGITUDE_REF,
-    ExifInterface.TAG_GPS_PROCESSING_METHOD,
-    ExifInterface.TAG_GPS_TIMESTAMP,
-    ExifInterface.TAG_IMAGE_LENGTH,
-    ExifInterface.TAG_IMAGE_WIDTH,
-    ExifInterface.TAG_ISO,
-    ExifInterface.TAG_MAKE,
-    ExifInterface.TAG_MODEL,
-    ExifInterface.TAG_ORIENTATION,
-    ExifInterface.TAG_SUBSEC_TIME,
-    ExifInterface.TAG_SUBSEC_TIME_DIG,
-    ExifInterface.TAG_SUBSEC_TIME_ORIG,
-    ExifInterface.TAG_WHITE_BALANCE
+          ExifInterface.TAG_APERTURE,
+          ExifInterface.TAG_DATETIME,
+          ExifInterface.TAG_DATETIME_DIGITIZED,
+          ExifInterface.TAG_EXPOSURE_TIME,
+          ExifInterface.TAG_FLASH,
+          ExifInterface.TAG_FOCAL_LENGTH,
+          ExifInterface.TAG_GPS_ALTITUDE,
+          ExifInterface.TAG_GPS_ALTITUDE_REF,
+          ExifInterface.TAG_GPS_DATESTAMP,
+          ExifInterface.TAG_GPS_LATITUDE,
+          ExifInterface.TAG_GPS_LATITUDE_REF,
+          ExifInterface.TAG_GPS_LONGITUDE,
+          ExifInterface.TAG_GPS_LONGITUDE_REF,
+          ExifInterface.TAG_GPS_PROCESSING_METHOD,
+          ExifInterface.TAG_GPS_TIMESTAMP,
+          ExifInterface.TAG_IMAGE_LENGTH,
+          ExifInterface.TAG_IMAGE_WIDTH,
+          ExifInterface.TAG_ISO,
+          ExifInterface.TAG_MAKE,
+          ExifInterface.TAG_MODEL,
+          ExifInterface.TAG_ORIENTATION,
+          ExifInterface.TAG_SUBSEC_TIME,
+          ExifInterface.TAG_SUBSEC_TIME_DIG,
+          ExifInterface.TAG_SUBSEC_TIME_ORIG,
+          ExifInterface.TAG_WHITE_BALANCE
   };
 
   public ImageEditorModule(ReactApplicationContext reactContext) {
@@ -128,7 +128,6 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
       mContext = context;
     }
 
-
     @Override
     protected void doInBackgroundGuarded(Void... params) {
       cleanDirectory(mContext.getCacheDir());
@@ -140,12 +139,12 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
 
     private void cleanDirectory(File directory) {
       File[] toDelete = directory.listFiles(
-          new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String filename) {
-              return filename.startsWith(TEMP_FILE_PREFIX);
-            }
-          });
+              new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String filename) {
+                  return filename.startsWith(TEMP_FILE_PREFIX);
+                }
+              });
       if (toDelete != null) {
         for (File file: toDelete) {
           file.delete();
@@ -169,14 +168,14 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void cropImage(
-      String uri,
-      ReadableMap options,
-      Promise promise) {
+          String uri,
+          ReadableMap options,
+          Promise promise) {
     ReadableMap offset = options.hasKey("offset") ? options.getMap("offset") : null;
     ReadableMap size = options.hasKey("size") ? options.getMap("size") : null;
     if (offset == null || size == null ||
-        !offset.hasKey("x") || !offset.hasKey("y") ||
-        !size.hasKey("width") || !size.hasKey("height")) {
+            !offset.hasKey("x") || !offset.hasKey("y") ||
+            !size.hasKey("width") || !size.hasKey("height")) {
       throw new JSApplicationIllegalArgumentException("Please specify offset and size");
     }
     if (uri == null || uri.isEmpty()) {
@@ -184,18 +183,18 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
     }
 
     CropTask cropTask = new CropTask(
-        getReactApplicationContext(),
-        uri,
-        (int) offset.getDouble("x"),
-        (int) offset.getDouble("y"),
-        (int) size.getDouble("width"),
-        (int) size.getDouble("height"),
-        promise);
+            getReactApplicationContext(),
+            uri,
+            (int) offset.getDouble("x"),
+            (int) offset.getDouble("y"),
+            (int) size.getDouble("width"),
+            (int) size.getDouble("height"),
+            promise);
     if (options.hasKey("displaySize")) {
       ReadableMap targetSize = options.getMap("displaySize");
       cropTask.setTargetSize(
-        (int) targetSize.getDouble("width"),
-        (int) targetSize.getDouble("height"));
+              (int) targetSize.getDouble("width"),
+              (int) targetSize.getDouble("height"));
     }
     cropTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
@@ -212,17 +211,17 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
     final Promise mPromise;
 
     private CropTask(
-        ReactContext context,
-        String uri,
-        int x,
-        int y,
-        int width,
-        int height,
-        Promise promise) {
+            ReactContext context,
+            String uri,
+            int x,
+            int y,
+            int width,
+            int height,
+            Promise promise) {
       super(context);
       if (x < 0 || y < 0 || width <= 0 || height <= 0) {
         throw new JSApplicationIllegalArgumentException(String.format(
-            "Invalid crop rectangle: [%d, %d, %d, %d]", x, y, width, height));
+                "Invalid crop rectangle: [%d, %d, %d, %d]", x, y, width, height));
       }
       mContext = context;
       mUri = uri;
@@ -236,7 +235,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
     public void setTargetSize(int width, int height) {
       if (width <= 0 || height <= 0) {
         throw new JSApplicationIllegalArgumentException(String.format(
-            "Invalid target size: [%d, %d]", width, height));
+                "Invalid target size: [%d, %d]", width, height));
       }
       mTargetWidth = width;
       mTargetHeight = height;
@@ -270,6 +269,8 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
           inputStream.close();
         }
       }
+    }
+
 
     @Override
     protected void doInBackgroundGuarded(Void... params) {
@@ -334,10 +335,10 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
      * @param outOptions Bitmap options, useful to determine {@code outMimeType}.
      */
     private Bitmap cropAndResize(
-        int targetWidth,
-        int targetHeight,
-        BitmapFactory.Options outOptions)
-        throws IOException {
+            int targetWidth,
+            int targetHeight,
+            BitmapFactory.Options outOptions)
+            throws IOException {
       Assertions.assertNotNull(outOptions);
 
       // Loading large bitmaps efficiently:
@@ -422,7 +423,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
       return new File(uri.getPath());
     } else if (uri.getScheme().equals("content")) {
       Cursor cursor = context.getContentResolver()
-        .query(uri, new String[] { MediaStore.MediaColumns.DATA }, null, null, null);
+              .query(uri, new String[] { MediaStore.MediaColumns.DATA }, null, null, null);
       if (cursor != null) {
         try {
           if (cursor.moveToFirst()) {
@@ -470,7 +471,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
   }
 
   private static void writeCompressedBitmapToFile(Bitmap cropped, String mimeType, File tempFile)
-      throws IOException {
+          throws IOException {
     OutputStream out = new FileOutputStream(tempFile);
     try {
       cropped.compress(getCompressFormatForType(mimeType), COMPRESS_QUALITY, out);
@@ -488,7 +489,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
    * @param mimeType the MIME type of the file to create (image/*)
    */
   private static File createTempFile(Context context, @Nullable String mimeType)
-      throws IOException {
+          throws IOException {
     File externalCacheDir = context.getExternalCacheDir();
     File internalCacheDir = context.getCacheDir();
     File cacheDir;
@@ -502,7 +503,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
       cacheDir = externalCacheDir;
     } else {
       cacheDir = externalCacheDir.getFreeSpace() > internalCacheDir.getFreeSpace() ?
-          externalCacheDir : internalCacheDir;
+              externalCacheDir : internalCacheDir;
     }
     return File.createTempFile(TEMP_FILE_PREFIX, getFileExtensionForType(mimeType), cacheDir);
   }
@@ -519,7 +520,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
       int halfHeight = height / 2;
       int halfWidth = width / 2;
       while ((halfWidth / inSampleSize) >= targetWidth
-          && (halfHeight / inSampleSize) >= targetHeight) {
+              && (halfHeight / inSampleSize) >= targetHeight) {
         inSampleSize *= 2;
       }
     }
