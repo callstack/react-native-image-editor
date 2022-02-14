@@ -128,6 +128,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
       mContext = context;
     }
 
+
     @Override
     protected void doInBackgroundGuarded(Void... params) {
       cleanDirectory(mContext.getCacheDir());
@@ -255,6 +256,21 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
       return stream;
     }
 
+    private String getMimeType() throws IOException {
+      BitmapFactory.Options outOptions = new BitmapFactory.Options();
+      outOptions.inJustDecodeBounds = true;
+
+      InputStream inputStream = openBitmapInputStream();
+
+      try {
+        BitmapFactory.decodeStream(inputStream, null, outOptions);
+        return outOptions.outMimeType;
+      } finally {
+        if (inputStream != null) {
+          inputStream.close();
+        }
+      }
+
     @Override
     protected void doInBackgroundGuarded(Void... params) {
       try {
@@ -272,7 +288,11 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
 
         String mimeType = outOptions.outMimeType;
         if (mimeType == null || mimeType.isEmpty()) {
-          throw new IOException("Could not determine MIME type");
+          mimeType = getMimeType();
+
+          if (mimeType == null || mimeType.isEmpty()) {
+            throw new IOException("Could not determine MIME type");
+          }
         }
 
         File tempFile = createTempFile(mContext, mimeType);
