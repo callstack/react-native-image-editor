@@ -1,3 +1,6 @@
+### This is a fork that addresses the MIME issue, feel free to use it whilst the folks at Callstack merge issue. 
+### All Credit goes to @MikePodgorniy 
+
 # react-native-image-editor
 
 Image Editor Native module for React Native.
