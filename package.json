@@ -1,12 +1,12 @@
 {
   "name": "image-editor-mime-error-fix",
-  "version": "2.3.2",
-  "description": "React Native Image Editing native modules for iOS & Android - Fixed",
+  "version": "2.3.3",
+  "description": "React Native Image Editing native modules for iOS & Android - Mime Error Fixed",
   "main": "lib/ImageEditor.js",
   "typings": "typings/index.d.ts",
   "author": "Mayfairr",
   "contributors": [],
-  "homepage": "https://github.com/mayfairr/react-native-image-editor",
+  "homepage": "https://github.com/mayfairr/React-Native-image-editor-mime-error-fix",
   "license": "MIT",
   "keywords": [
     "react-native",
@@ -17,7 +17,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/mayfairr/react-native-image-editor"
+    "url": "https://github.com/mayfairr/React-Native-image-editor-mime-error-fix"
   },
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
