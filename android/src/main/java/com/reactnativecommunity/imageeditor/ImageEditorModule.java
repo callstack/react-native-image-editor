@@ -97,7 +97,6 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
 
   public ImageEditorModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    new CleanTask(getReactApplicationContext()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @Override
@@ -108,49 +107,6 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
   @Override
   public Map<String, Object> getConstants() {
     return Collections.emptyMap();
-  }
-
-  @Override
-  public void onCatalystInstanceDestroy() {
-    new CleanTask(getReactApplicationContext()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-  }
-
-  /**
-   * Asynchronous task that cleans up cache dirs (internal and, if available, external) of cropped
-   * image files. This is run when the catalyst instance is being destroyed (i.e. app is shutting
-   * down) and when the module is instantiated, to handle the case where the app crashed.
-   */
-  private static class CleanTask extends GuardedAsyncTask<Void, Void> {
-    private final Context mContext;
-
-    private CleanTask(ReactContext context) {
-      super(context);
-      mContext = context;
-    }
-
-    @Override
-    protected void doInBackgroundGuarded(Void... params) {
-      cleanDirectory(mContext.getCacheDir());
-      File externalCacheDir = mContext.getExternalCacheDir();
-      if (externalCacheDir != null) {
-        cleanDirectory(externalCacheDir);
-      }
-    }
-
-    private void cleanDirectory(File directory) {
-      File[] toDelete = directory.listFiles(
-          new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String filename) {
-              return filename.startsWith(TEMP_FILE_PREFIX);
-            }
-          });
-      if (toDelete != null) {
-        for (File file: toDelete) {
-          file.delete();
-        }
-      }
-    }
   }
 
   /**
