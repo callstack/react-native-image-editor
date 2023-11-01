@@ -1,0 +1,109 @@
+name: Build App
+description: 'Set up your GitHub Actions workflow with a specific version of Node.js'
+inputs:
+  new-arch-enabled:
+    description: 'Enable new architecture (example: 1 or 0))'
+    required: true
+
+  rn-ver:
+    description: 'Version of React Native (example: 0.72.6))'
+    required: true
+
+  arch:
+    description: 'Architecture (example: "arm64-v8a" or "x86_64,arm64-v8a") android only'
+    required: false
+    default: 'armeabi-v7a,arm64-v8a,x86,x86_64'
+
+  module-to-install:
+    description: 'Module to install (example: "react-native-architectures" or "file:/path/to/module"))'
+    required: true
+
+  store-artifacts:
+    description: 'Store artifacts on GitHub (example: true or false))'
+    required: false
+    default: 'true'
+
+  platform:
+    description: 'Platform (example: android or ios))'
+    required: true
+
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: ./.github/actions/lock-nodejs-ver
+
+    - uses: ./.github/actions/lock-java-ver
+      if: ${{ inputs.platform == 'android' }}
+
+    - uses: ./.github/actions/lock-ruby-ver
+      if: ${{ inputs.platform == 'ios' }}
+
+    - name: Create tmp directory
+      shell: bash
+      id: clear_name
+      env:
+        APP_NAME: Example${{ inputs.rn-ver }}${{ inputs.new-arch-enabled }}App
+      run: |
+        input_string="${{ env.APP_NAME }}"
+
+        # Remove "." and "-" symbols from the input string
+        modified_string="${input_string//./}"
+        modified_string="${modified_string//-/}"
+
+        echo "folder=${modified_string}" >> $GITHUB_OUTPUT
+
+    - name: Build ${{ inputs.platform }} (${{ inputs.arch }})
+      working-directory: /tmp
+      shell: bash
+      id: app_build
+      env:
+        APP_NAME: ${{ steps.clear_name.outputs.folder }}
+        # iOS only
+        NO_FLIPPER: 1
+        RCT_NEW_ARCH_ENABLED: ${{ inputs.new-arch-enabled }}
+      run: |
+        set -x # print all executed commands
+
+        # Create new tmp React Native project
+        npx react-native@${{ inputs.rn-ver }} init ${{ env.APP_NAME }} --version ${{ inputs.rn-ver }}
+        cd ${{ env.APP_NAME }}
+
+        # Install my module
+        yarn add ${{ inputs.module-to-install }}
+
+        # Debug info
+        npx react-native@${{ inputs.rn-ver }} info
+
+        if [[ '${{ inputs.platform }}' == 'ios' ]]; then
+          brew install xcbeautify
+
+          # Update pods after adding new module
+          npx pod-install
+      
+          # Build iOS App
+          xcodebuild -scheme ${{ env.APP_NAME }} -workspace ios/${{ env.APP_NAME }}.xcworkspace -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator'  | xcbeautify --quiet
+        
+          # set output variable          
+          echo "app_path=$(find ~/Library/Developer/Xcode/DerivedData -type d -name "${{ env.APP_NAME }}.app")" >> $GITHUB_OUTPUT
+        else
+          # Enable new arch for Android
+          if [[ '${{ inputs.new-arch-enabled }}' == '1' ]]; then
+            sed -i 's/newArchEnabled=false/newArchEnabled=true/' android/gradle.properties
+          fi
+
+          # Build Android
+          ./android/gradlew assembleRelease --no-daemon -p android -PreactNativeArchitectures=${{ inputs.arch }}
+        
+          # set output variable
+          echo "app_path=$(find $(pwd)/android -type f -name '*.apk')" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Store Android artifacts on GitHub
+      uses: actions/upload-artifact@v3
+      if: ${{ inputs.store-artifacts == 'true' }}
+      with:
+        name: ${{ inputs.platform }}-${{ inputs.rn-ver }}-newArch${{ inputs.new-arch-enabled }}
+        if-no-files-found: error
+        retention-days: 14 # 2 weeks
+        path: ${{ steps.app_build.outputs.app_path }}

@@ -1,0 +1,41 @@
+name: Install dependencies
+description: 'Installs and caches Node.js dependencies using Yarn.'
+inputs:
+  node-version:
+    description: 'The Node.js version to set up'
+    required: false
+
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: ./.github/actions/lock-nodejs-ver
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Restore node_modules from cache
+      uses: actions/cache/restore@v3
+      id: restore_node_modules
+      with:
+        key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
+        restore-keys: ${{ runner.os }}-yarn-
+        path: ${{ github.workspace }}/node_modules
+
+
+    - name: Install node_modules
+      if: steps.restore_node_modules.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        # Retry 3 times before the steps actually fails
+        (echo "===== Install node_modules Attempt:  1 ====" && yarn install --frozen-lockfile) || \
+        (echo "===== Install node_modules Attempt:  2 ====" && yarn install --frozen-lockfile) || \
+        (echo "===== Install node_modules Attempt:  3 ====" && yarn install --frozen-lockfile) || \
+        (echo "===== Install node_modules Step Failed ====" && exit 1)
+
+
+    - name: Save node_modules to cache
+      if: steps.restore_node_modules.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v3
+      with:
+        key: ${{ steps.restore_node_modules.outputs.cache-primary-key }}
+        path: ${{ github.workspace }}/node_modules

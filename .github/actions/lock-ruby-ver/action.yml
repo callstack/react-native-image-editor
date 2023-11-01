@@ -1,0 +1,16 @@
+name: Setup Ruby
+description: 'Set up your GitHub Actions workflow with a specific version of Ruby'
+inputs:
+  ruby-version:
+    description: 'The Ruby version to set up'
+    required: false
+    default: 3.0
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ inputs.ruby-version }}
+        bundler-cache: true

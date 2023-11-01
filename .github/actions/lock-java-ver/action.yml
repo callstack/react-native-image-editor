@@ -1,0 +1,16 @@
+name: Setup Java
+description: 'Set up your GitHub Actions workflow with a specific version of Java'
+inputs:
+  java-version:
+    description: 'The Java version to set up'
+    required: false
+    default: 17
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Java ${{ inputs.java-version }}
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: ${{ inputs.java-version }}
