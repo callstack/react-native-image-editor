@@ -1,0 +1,15 @@
+name: Setup Node.js
+description: 'Set up your GitHub Actions workflow with a specific version of Node.js'
+inputs:
+  node-version:
+    description: 'The Node.js version to set up'
+    required: false
+    default: 18
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}

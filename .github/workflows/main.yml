@@ -1,0 +1,89 @@
+name: Main
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ACTIONS_RUNNER_DEBUG: true # Enable debug logs
+
+jobs:
+  cache-node-modules:
+    name: Cache node_modules
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/install-dependencies
+
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-22.04
+    needs: [cache-node-modules]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/install-dependencies
+
+      - name: Lint files
+        run: yarn run test:eslint
+
+      - name: Flow files
+        run: yarn run test:flow
+
+  build-android:
+    name: Build Android
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        new_arch_enabled: [ 1, 0 ]
+        rn_ver: [latest ] # also, can be any npm tag: 0.71-stable, next, nightly
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/build-app
+        with:
+          arch: arm64-v8a
+          new-arch-enabled: ${{ matrix.new_arch_enabled }}
+          rn-ver: ${{ matrix.rn_ver }}
+          module-to-install: file:${{ github.workspace }}
+          store-artifacts: true
+          platform: android
+
+  build-ios:
+    name: Build iOS
+    runs-on: macos-13
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        new_arch_enabled: [ 1, 0 ]
+        rn_ver: [latest ] # also, can be any npm tag: 0.71-stable, next, nightly
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/build-app
+        with:
+          new-arch-enabled: ${{ matrix.new_arch_enabled }}
+          rn-ver: ${{ matrix.rn_ver }}
+          module-to-install: file:${{ github.workspace }}
+          store-artifacts: true
+          platform: ios
