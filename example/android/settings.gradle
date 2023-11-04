@@ -1,7 +1,12 @@
-rootProject.name = 'ImageEditorExample'
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        google()
+    }
+}
 
-include ':app'
-include ':rnImageEditor'
-project(':rnImageEditor').projectDir = new File(rootProject.projectDir, '../../android')
-include ':detox'
-project(':detox').projectDir = new File(rootProject.projectDir, '../../node_modules/detox/android/detox')
+rootProject.name = "ImageEditorExample"
+
+apply(from: "../node_modules/react-native-test-app/test-app.gradle")
+applyTestAppSettings(settings)
