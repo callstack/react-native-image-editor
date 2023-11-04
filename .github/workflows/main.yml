@@ -38,10 +38,13 @@ jobs:
       - uses: ./.github/actions/install-dependencies
 
       - name: Lint files
-        run: yarn run test:eslint
+        run: yarn run lint
 
-      - name: Flow files
-        run: yarn run test:flow
+      - name: Types check
+        run: yarn run ts
+
+      - name: Lib build
+        run: yarn run build
 
   build-android:
     name: Build Android

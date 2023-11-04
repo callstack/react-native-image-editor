@@ -1,6 +1,18 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+import {NativeModules} from 'react-native';
+
+const {RNCImageEditor} = NativeModules;
+
 type $Maybe<T> = T | null | undefined;
 
-export type ImageCropData = {
+export interface ImageCropData {
   /**
    * The top-left corner of the cropped image, specified in the original
    * image's coordinate space.
@@ -8,7 +20,7 @@ export type ImageCropData = {
   offset: {
     x: number,
     y: number,
-  },
+  };
   /**
    * The size (dimensions) of the cropped image, specified in the original
    * image's coordinate space.
@@ -16,22 +28,22 @@ export type ImageCropData = {
   size: {
     width: number,
     height: number,
-  },
+  };
   /**
    * (Optional) size to scale the cropped image to.
    */
   displaySize?: $Maybe<{
     width: number,
     height: number,
-  }>,
+  }>;
   /**
    * (Optional) the resizing mode to use when scaling the image. If the
    * `displaySize` param is not specified, this has no effect.
    */
-  resizeMode?: $Maybe<"contain" | "cover" | "stretch">,
-};
+  resizeMode?: $Maybe<'contain' | 'cover' | 'stretch'>;
+}
 
-declare class ImageEditor {
+class ImageEditor {
   /**
    * Crop the image specified by the URI param. If URI points to a remote
    * image, it will be downloaded automatically. If the image cannot be
@@ -44,10 +56,9 @@ declare class ImageEditor {
    * will point to the image in the cache path. Remember to delete the
    * cropped image from the cache path when you are done with it.
    */
-  static cropImage: (
-    uri: string,
-    cropData: ImageCropData,
-  ) => Promise<string>
+  static cropImage(uri: string, cropData: ImageCropData): Promise<string> {
+    return RNCImageEditor.cropImage(uri, cropData);
+  }
 }
 
-export default ImageEditor
+export default ImageEditor;
