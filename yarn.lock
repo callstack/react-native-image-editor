@@ -28,7 +28,7 @@
   resolved "https://registry.yarnpkg.com/@babel/compat-data/-/compat-data-7.23.2.tgz#6a12ced93455827037bfb5ed8492820d60fc32cc"
   integrity sha512-0S9TQMmDHlqAZ2ITT95irXKfxN9bncq8ZCoJhun3nHL/lLUxd2NKBJYoNGWH7S0hz6fRQwWlAWn/ILM0C70KZQ==
 
-"@babel/core@^7.13.16", "@babel/core@^7.18.5", "@babel/core@^7.20.0":
+"@babel/core@^7.13.16", "@babel/core@^7.18.5", "@babel/core@^7.20.0", "@babel/core@^7.23.2":
   version "7.23.2"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.23.2.tgz#ed10df0d580fff67c5f3ee70fd22e2e4c90a9f94"
   integrity sha512-n7s51eWdaWZ3vGT2tD4T7J6eJs3QoBXydv7vkUM06Bf1cbVD2Kc2UrkzhiQwobfV7NwOnQXYL7UBJ5VPU+RGoQ==
@@ -982,7 +982,7 @@
     "@babel/helper-create-regexp-features-plugin" "^7.22.5"
     "@babel/helper-plugin-utils" "^7.22.5"
 
-"@babel/preset-env@^7.18.2":
+"@babel/preset-env@^7.18.2", "@babel/preset-env@^7.23.2":
   version "7.23.2"
   resolved "https://registry.yarnpkg.com/@babel/preset-env/-/preset-env-7.23.2.tgz#1f22be0ff0e121113260337dbc3e58fafce8d059"
   integrity sha512-BW3gsuDD+rvHL2VO2SjAUNTBe5YrjsTiDyqamPDWY723na3/yPQ65X5oQkFVJZ0o50/2d+svm1rkPoJeR1KxVQ==
