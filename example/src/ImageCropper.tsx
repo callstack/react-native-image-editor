@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
-import {Image, Platform, ScrollView} from 'react-native';
+import React, { Component } from 'react';
+import { Image, Platform, ScrollView } from 'react-native';
 
-import type {ImageSourcePropType, StyleProp, ViewStyle} from 'react-native';
-import type {ImageCropData, ImageOffset, ImageSize} from './types';
-import {NativeSyntheticEvent} from 'react-native/Libraries/Types/CoreEventTypes';
-import {NativeScrollEvent} from 'react-native/Libraries/Components/ScrollView/ScrollView';
+import type { ImageSourcePropType, StyleProp, ViewStyle } from 'react-native';
+import type { ImageCropData, ImageOffset, ImageSize } from './types';
+import { NativeSyntheticEvent } from 'react-native/Libraries/Types/CoreEventTypes';
+import { NativeScrollEvent } from 'react-native/Libraries/Components/ScrollView/ScrollView';
 
 export interface ImageCropperProps {
   image: ImageSize & ImageSourcePropType;
@@ -53,16 +53,16 @@ export class ImageCropper extends Component<ImageCropperProps> {
     };
     this._maximumZoomScale = Math.min(
       this.props.image.width / this._scaledImageSize.width,
-      this.props.image.height / this._scaledImageSize.height,
+      this.props.image.height / this._scaledImageSize.height
     );
     this._minimumZoomScale = Math.max(
       this.props.size.width / this._scaledImageSize.width,
-      this.props.size.height / this._scaledImageSize.height,
+      this.props.size.height / this._scaledImageSize.height
     );
     this._updateTransformData(
       this._contentOffset,
       this._scaledImageSize,
-      this.props.size,
+      this.props.size
     );
   }
 
@@ -70,14 +70,14 @@ export class ImageCropper extends Component<ImageCropperProps> {
     this._updateTransformData(
       event.nativeEvent.contentOffset,
       event.nativeEvent.contentSize,
-      event.nativeEvent.layoutMeasurement,
+      event.nativeEvent.layoutMeasurement
     );
   };
 
   _updateTransformData(
     offset: NativeScrollEvent['contentOffset'],
     scaledImageSize: NativeScrollEvent['contentSize'],
-    croppedImageSize: NativeScrollEvent['layoutMeasurement'],
+    croppedImageSize: NativeScrollEvent['layoutMeasurement']
   ) {
     const offsetRatioX = offset.x / scaledImageSize.width;
     const offsetRatioY = offset.y / scaledImageSize.height;
@@ -111,7 +111,8 @@ export class ImageCropper extends Component<ImageCropperProps> {
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         style={this.props.style}
-        scrollEventThrottle={16}>
+        scrollEventThrottle={16}
+      >
         <Image
           testID="testImage"
           source={this.props.image}

@@ -6,9 +6,9 @@
  *
  */
 
-import {NativeModules} from 'react-native';
+import { NativeModules } from 'react-native';
 
-const {RNCImageEditor} = NativeModules;
+const { RNCImageEditor } = NativeModules;
 
 type $Maybe<T> = T | null | undefined;
 

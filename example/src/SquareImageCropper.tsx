@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   Image,
   StyleSheet,
@@ -9,11 +9,11 @@ import {
 } from 'react-native';
 import ImageEditor from '@react-native-community/image-editor';
 
-import {DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT} from './constants';
-import {ImageCropper} from './ImageCropper';
+import { DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT } from './constants';
+import { ImageCropper } from './ImageCropper';
 
-import type {LayoutChangeEvent} from 'react-native';
-import type {ImageCropData, ImageSize} from './types';
+import type { LayoutChangeEvent } from 'react-native';
+import type { ImageCropData, ImageSize } from './types';
 
 interface State {
   croppedImageURI: string | null;
@@ -50,7 +50,7 @@ export class SquareImageCropper extends Component<Props, State> {
       return;
     }
     this.setState({
-      measuredSize: {width: measuredWidth, height: measuredWidth},
+      measuredSize: { width: measuredWidth, height: measuredWidth },
     });
   };
 
@@ -72,7 +72,7 @@ export class SquareImageCropper extends Component<Props, State> {
   }
 
   _renderImageCropper() {
-    const {photo, cropError, measuredSize} = this.state;
+    const { photo, cropError, measuredSize } = this.state;
 
     if (!photo) {
       return <SafeAreaView style={styles.container} />;
@@ -91,7 +91,8 @@ export class SquareImageCropper extends Component<Props, State> {
         />
         <TouchableHighlight
           style={styles.cropButtonTouchable}
-          onPress={this._crop}>
+          onPress={this._crop}
+        >
           <View style={styles.cropButton}>
             <Text style={styles.cropButtonLabel}>Crop</Text>
           </View>
@@ -106,12 +107,13 @@ export class SquareImageCropper extends Component<Props, State> {
       <SafeAreaView style={styles.container}>
         <Text style={styles.text}>Here is the cropped image</Text>
         <Image
-          source={{uri: this.state.croppedImageURI}}
+          source={{ uri: this.state.croppedImageURI }}
           style={[styles.imageCropper, this.state.measuredSize]}
         />
         <TouchableHighlight
           style={styles.cropButtonTouchable}
-          onPress={this._reset}>
+          onPress={this._reset}
+        >
           <View style={styles.cropButton}>
             <Text style={styles.cropButtonLabel}>Try again</Text>
           </View>
@@ -128,20 +130,20 @@ export class SquareImageCropper extends Component<Props, State> {
       }
       const croppedImageURI = await ImageEditor.cropImage(
         this.state.photo.uri,
-        this._transformData,
+        this._transformData
       );
       if (croppedImageURI) {
-        this.setState({croppedImageURI});
+        this.setState({ croppedImageURI });
       }
     } catch (cropError) {
       if (cropError instanceof Error) {
-        this.setState({cropError});
+        this.setState({ cropError });
       }
     }
   };
 
   _reset = () => {
-    this.setState({croppedImageURI: null, cropError: null});
+    this.setState({ croppedImageURI: null, cropError: null });
   };
 }
 

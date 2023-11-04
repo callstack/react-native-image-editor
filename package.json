@@ -2,11 +2,11 @@
   "name": "@react-native-community/image-editor",
   "version": "2.3.0",
   "description": "React Native Image Editing native modules for iOS & Android",
-  "main": "lib/commonjs/index.js",
-  "module": "lib/module/index.js",
+  "main": "lib/commonjs/index",
+  "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
-  "react-native": "src/index.ts",
-  "source": "src/index.ts",
+  "react-native": "src/index",
+  "source": "src/index",
   "author": "Dawid Urbaniak <dawidu@onet.pl>",
   "contributors": [],
   "homepage": "https://github.com/callstack/react-native-image-editor#readme",
@@ -16,6 +16,8 @@
   "license": "MIT",
   "keywords": [
     "react-native",
+    "ios",
+    "android",
     "react native",
     "image editor",
     "imageeditor",
@@ -28,15 +30,20 @@
   "files": [
     "src",
     "lib",
+    "android",
+    "ios",
+    "cpp",
+    "*.podspec",
+    "!ios/build",
+    "!android/build",
+    "!android/gradle",
+    "!android/gradlew",
+    "!android/gradlew.bat",
+    "!android/local.properties",
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__",
-    "typings",
-    "android",
-    "ios",
-    "react-native-image-editor.podspec",
-    "!android/build",
-    "!ios/build"
+    "!**/.*"
   ],
   "scripts": {
     "ts": "yarn tsc --noEmit",
@@ -61,23 +68,16 @@
     "@types/react": "^18.2.34",
     "@typescript-eslint/parser": "^6.9.1",
     "eslint": "^8.53.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
     "metro-react-native-babel-preset": "0.76.8",
-    "prettier": "^2.8.8",
+    "prettier": "^3.0.3",
     "react": "^18.2.0",
     "react-native": "^0.72.6",
     "react-native-builder-bob": "^0.23.1",
     "react-native-test-app": "^2.5.32",
     "release-it": "^10.3.1",
     "typescript": "^5.2.2"
-  },
-  "eslintConfig": {
-    "extends": "@react-native"
-  },
-  "prettier": {
-    "singleQuote": true,
-    "trailingComma": "all",
-    "bracketSpacing": false,
-    "jsxBracketSameLine": true
   },
   "publishConfig": {
     "access": "public",
@@ -96,9 +96,5 @@
         }
       ]
     ]
-  },
-  "eslintIgnore": [
-    "node_modules/",
-    "lib/"
-  ]
+  }
 }

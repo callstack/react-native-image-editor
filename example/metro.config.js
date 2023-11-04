@@ -44,7 +44,10 @@ const config = {
 
 try {
   // Starting with react-native 0.72, we are required to provide a full config.
-  const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
+  const {
+    getDefaultConfig,
+    mergeConfig,
+  } = require('@react-native/metro-config');
   module.exports = mergeConfig(getDefaultConfig(__dirname), config);
 } catch (_) {
   module.exports = config;
