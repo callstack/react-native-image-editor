@@ -46,14 +46,10 @@
     "prepublishOnly": "yarn run build"
   },
   "peerDependencies": {
-    "react": ">=16.0.0",
     "react-native": ">=0.57.0"
   },
   "peerDependenciesMeta": {
     "react": {
-      "optional": true
-    },
-    "react-native": {
       "optional": true
     }
   },
