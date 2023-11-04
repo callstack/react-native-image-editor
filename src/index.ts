@@ -18,23 +18,23 @@ export interface ImageCropData {
    * image's coordinate space.
    */
   offset: {
-    x: number,
-    y: number,
+    x: number;
+    y: number;
   };
   /**
    * The size (dimensions) of the cropped image, specified in the original
    * image's coordinate space.
    */
   size: {
-    width: number,
-    height: number,
+    width: number;
+    height: number;
   };
   /**
    * (Optional) size to scale the cropped image to.
    */
   displaySize?: $Maybe<{
-    width: number,
-    height: number,
+    width: number;
+    height: number;
   }>;
   /**
    * (Optional) the resizing mode to use when scaling the image. If the

@@ -60,6 +60,7 @@
   "devDependencies": {
     "@react-native/eslint-config": "^0.74.0",
     "@react-native/typescript-config": "^0.74.0",
+    "@types/react": "^18.2.34",
     "@typescript-eslint/parser": "^6.9.1",
     "eslint": "^8.53.0",
     "metro-react-native-babel-preset": "0.76.8",
