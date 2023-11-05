@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1478DE2B22A0403F00D818FA /* RNCFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = 1478DE2A22A0403F00D818FA /* RNCFileSystem.m */; };
-		1478DE2E22A044E500D818FA /* RNCImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 1478DE2D22A044E500D818FA /* RNCImageUtils.m */; };
-		B3E7B58A1CC2AC0600A0062D /* RNCImageEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNCImageEditor.m */; };
+		C8EA266C2AF7E7CA008069C8 /* RNCFileSystem.mm in Sources */ = {isa = PBXBuildFile; fileRef = C8EA266B2AF7E7CA008069C8 /* RNCFileSystem.mm */; };
+		C8EA266E2AF7E7D5008069C8 /* RNCImageEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = C8EA266D2AF7E7D5008069C8 /* RNCImageEditor.mm */; };
+		C8EA26702AF7E7DB008069C8 /* RNCImageUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = C8EA266F2AF7E7DB008069C8 /* RNCImageUtils.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,12 +26,12 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNCImageEditor.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNCImageEditor.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		1478DE2A22A0403F00D818FA /* RNCFileSystem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNCFileSystem.m; sourceTree = "<group>"; };
 		1478DE2C22A0406800D818FA /* RNCFileSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNCFileSystem.h; sourceTree = "<group>"; };
-		1478DE2D22A044E500D818FA /* RNCImageUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNCImageUtils.m; sourceTree = "<group>"; };
 		1478DE2F22A0450800D818FA /* RNCImageUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNCImageUtils.h; sourceTree = "<group>"; };
 		B3E7B5881CC2AC0600A0062D /* RNCImageEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCImageEditor.h; sourceTree = "<group>"; };
-		B3E7B5891CC2AC0600A0062D /* RNCImageEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCImageEditor.m; sourceTree = "<group>"; };
+		C8EA266B2AF7E7CA008069C8 /* RNCFileSystem.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RNCFileSystem.mm; sourceTree = "<group>"; };
+		C8EA266D2AF7E7D5008069C8 /* RNCImageEditor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RNCImageEditor.mm; sourceTree = "<group>"; };
+		C8EA266F2AF7E7DB008069C8 /* RNCImageUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RNCImageUtils.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,12 +56,12 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				1478DE2A22A0403F00D818FA /* RNCFileSystem.m */,
-				1478DE2D22A044E500D818FA /* RNCImageUtils.m */,
 				1478DE2F22A0450800D818FA /* RNCImageUtils.h */,
+				C8EA266F2AF7E7DB008069C8 /* RNCImageUtils.mm */,
 				1478DE2C22A0406800D818FA /* RNCFileSystem.h */,
+				C8EA266B2AF7E7CA008069C8 /* RNCFileSystem.mm */,
 				B3E7B5881CC2AC0600A0062D /* RNCImageEditor.h */,
-				B3E7B5891CC2AC0600A0062D /* RNCImageEditor.m */,
+				C8EA266D2AF7E7D5008069C8 /* RNCImageEditor.mm */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -105,6 +105,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 58B511D21A9E6C8500147676;
@@ -122,9 +123,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1478DE2E22A044E500D818FA /* RNCImageUtils.m in Sources */,
-				1478DE2B22A0403F00D818FA /* RNCFileSystem.m in Sources */,
-				B3E7B58A1CC2AC0600A0062D /* RNCImageEditor.m in Sources */,
+				C8EA266C2AF7E7CA008069C8 /* RNCFileSystem.mm in Sources */,
+				C8EA266E2AF7E7D5008069C8 /* RNCImageEditor.mm in Sources */,
+				C8EA26702AF7E7DB008069C8 /* RNCImageUtils.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

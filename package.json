@@ -84,7 +84,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "codegenConfig": {
-    "name": "RNImageEditorSpec",
+    "name": "RNCImageEditorSpec",
     "type": "modules",
     "jsSrcsDir": "src"
   },

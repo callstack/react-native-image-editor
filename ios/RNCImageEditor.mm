@@ -40,15 +40,37 @@ RCT_EXPORT_MODULE()
  *        be scaled down to `displaySize` rather than `size`.
  *        All units are in px (not points).
  */
+#ifdef RCT_NEW_ARCH_ENABLED
+- (void) cropImage:(NSString *)uri
+         cropData:(JS::NativeRNCImageEditor::SpecCropImageCropData &)data
+         resolve:(RCTPromiseResolveBlock)resolve
+         reject:(RCTPromiseRejectBlock)reject
+{
+  CGSize size = [RCTConvert CGSize:@{ @"width": @(data.size().width()), @"height": @(data.size().height()) }];
+  CGPoint offset = [RCTConvert CGPoint:@{ @"x": @(data.offset().x()), @"y": @(data.offset().y()) }];
+  CGSize targetSize = size;
+  if (data.displaySize().has_value()) {
+    JS::NativeRNCImageEditor::SpecCropImageCropDataDisplaySize displaySize = *data.displaySize(); // Extract the value from the optional
+    // in pixels
+    targetSize = [RCTConvert CGSize:@{ @"width": @(displaySize.width()), @"height": @(displaySize.height()) }];
+  }
+  NSString *displaySize = data.resizeMode();
+  NSURLRequest *imageRequest = [NSURLRequest requestWithURL:[NSURL URLWithString: uri]];
+#else
 RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
                   cropData:(NSDictionary *)cropData
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  CGRect rect = {
-    [RCTConvert CGPoint:cropData[@"offset"]],
-    [RCTConvert CGSize:cropData[@"size"]]
-  };
+  CGSize size = [RCTConvert CGSize:cropData[@"size"]];
+  CGPoint offset = [RCTConvert CGPoint:cropData[@"offset"]];
+  CGSize targetSize = size;
+  NSString *displaySize = cropData[@"resizeMode"];
+  if(displaySize){
+    targetSize = [RCTConvert CGSize:cropData[@"displaySize"]];
+  }
+#endif
+  CGRect rect = {offset,size};
   NSURL *url = [imageRequest URL];
   NSString *urlPath = [url path];
   NSString *extension = [urlPath pathExtension];
@@ -60,15 +82,13 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     }
 
     // Crop image
-    CGSize targetSize = rect.size;
     CGRect targetRect = {{-rect.origin.x, -rect.origin.y}, image.size};
     CGAffineTransform transform = RCTTransformFromTargetRect(image.size, targetRect);
     UIImage *croppedImage = RCTTransformImage(image, targetSize, image.scale, transform);
 
     // Scale image
-    if (cropData[@"displaySize"]) {
-      targetSize = [RCTConvert CGSize:cropData[@"displaySize"]]; // in pixels
-      RCTResizeMode resizeMode = [RCTConvert RCTResizeMode:cropData[@"resizeMode"] ?: @"contain"];
+    if (displaySize) {
+      RCTResizeMode resizeMode = [RCTConvert RCTResizeMode:displaySize ?: @"contain"];
       targetRect = RCTTargetRect(croppedImage.size, targetSize, 1, resizeMode);
       transform = RCTTransformFromTargetRect(croppedImage.size, targetRect);
       croppedImage = RCTTransformImage(croppedImage, targetSize, image.scale, transform);
@@ -77,7 +97,7 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     // Store image
     NSString *path = NULL;
     NSData *imageData = NULL;
-    
+
     if([extension isEqualToString:@"png"]){
       imageData = UIImagePNGRepresentation(croppedImage);
       path = [RNCFileSystem generatePathInDirectory:[[RNCFileSystem cacheDirectoryPath] stringByAppendingPathComponent:@"ReactNative_cropped_image_"] withExtension:@".png"];
@@ -90,14 +110,22 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
 
     NSError *writeError;
     NSString *uri = [RNCImageUtils writeImage:imageData toPath:path error:&writeError];
-      
+
     if (writeError != nil) {
       reject(@(writeError.code).stringValue, writeError.description, writeError);
       return;
     }
-      
+
     resolve(uri);
   }];
 }
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+    return std::make_shared<facebook::react::NativeRNCImageEditorSpecJSI>(params);
+}
+#endif
 
 @end

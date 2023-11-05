@@ -6,10 +6,7 @@
  *
  */
 import { NativeModules, Platform } from 'react-native';
-import type {
-  ImageCropData as ImageCropDataSpec,
-  Spec,
-} from './NativeRNCImageEditor';
+import type { Spec } from './NativeRNCImageEditor';
 
 const LINKING_ERROR =
   `The package '@react-native-community/image-editor' doesn't seem to be linked. Make sure: \n\n` +
@@ -35,8 +32,10 @@ const RNCImageEditor: Spec = RNCImageEditorModule
       }
     );
 
+type ImageCropDataFromSpec = Parameters<Spec['cropImage']>[1];
+
 export interface ImageCropData
-  extends Pick<ImageCropDataSpec, 'offset' | 'size' | 'displaySize'> {
+  extends Pick<ImageCropDataFromSpec, 'offset' | 'size' | 'displaySize'> {
   resizeMode?: 'contain' | 'cover' | 'stretch';
   // ^^^ codegen doesn't support union types yet
   // so to provide more type safety we override the type here
