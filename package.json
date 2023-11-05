@@ -83,6 +83,11 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
+  "codegenConfig": {
+    "name": "RNImageEditorSpec",
+    "type": "modules",
+    "jsSrcsDir": "src"
+  },
   "react-native-builder-bob": {
     "source": "src",
     "output": "lib",
