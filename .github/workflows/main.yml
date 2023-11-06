@@ -25,6 +25,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/install-dependencies
+        with:
+          lookup-only: true
 
   code-quality:
     name: Code Quality
@@ -38,13 +40,13 @@ jobs:
       - uses: ./.github/actions/install-dependencies
 
       - name: Lint files
-        run: yarn run lint
+        run: yarn lint
 
       - name: Types check
-        run: yarn run ts
+        run: yarn ts
 
       - name: Lib build
-        run: yarn run build
+        run: yarn build
 
   build-android:
     name: Build Android

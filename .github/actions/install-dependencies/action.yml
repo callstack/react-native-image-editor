@@ -4,7 +4,10 @@ inputs:
   node-version:
     description: 'The Node.js version to set up'
     required: false
-
+  lookup-only:
+    description: 'If true, only checks if cache entry exists and skips download. Default: false'
+    required: false
+    default: false
 
 runs:
   using: 'composite'
@@ -21,6 +24,7 @@ runs:
         key: ${{ runner.os }}-yarn-example-${{ hashFiles('./example/yarn.lock') }}
         restore-keys: ${{ runner.os }}-yarn-example-
         path: ${{ github.workspace }}/example/node_modules
+        lookup-only: ${{ inputs.lookup-only }}
 
 
     - name: Install example node_modules
@@ -51,6 +55,7 @@ runs:
         key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
         restore-keys: ${{ runner.os }}-yarn-
         path: ${{ github.workspace }}/node_modules
+        lookup-only: ${{ inputs.lookup-only }}
 
 
     - name: Install node_modules

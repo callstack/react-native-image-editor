@@ -49,8 +49,8 @@
     "ts": "yarn tsc --noEmit",
     "lint": "eslint '**/*.{js,ts,tsx}'",
     "release": "release-it",
-    "build": "rm -rf lib/* && bob build && prettier --write ./lib",
-    "prepublishOnly": "yarn run build"
+    "build": "bob build",
+    "prepack": "yarn run build"
   },
   "peerDependencies": {
     "react-native": ">=0.57.0"
