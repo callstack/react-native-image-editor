@@ -56,7 +56,7 @@
     "react-native": ">=0.57.0"
   },
   "peerDependenciesMeta": {
-    "react": {
+    "react-native": {
       "optional": true
     }
   },
