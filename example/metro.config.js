@@ -27,10 +27,16 @@ const blockList = exclusionList([
   /.*\.ProjectImports\.zip/,
 ]);
 
+const extraNodeModules = {
+  '@react-native-community/image-editor': path.resolve(__dirname, '..'),
+};
+
 const config = {
+  watchFolders: [extraNodeModules['@react-native-community/image-editor']],
   resolver: {
     blacklistRE: blockList,
     blockList,
+    extraNodeModules,
   },
   transformer: {
     getTransformOptions: async () => ({

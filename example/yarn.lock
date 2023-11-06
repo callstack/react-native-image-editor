@@ -1683,8 +1683,9 @@
     prompts "^2.4.0"
     semver "^7.5.2"
 
-"@react-native-community/image-editor@file:..":
-  version "2.3.0"
+"@react-native-community/image-editor@link:..":
+  version "0.0.0"
+  uid ""
 
 "@react-native/assets-registry@^0.72.0":
   version "0.72.0"
