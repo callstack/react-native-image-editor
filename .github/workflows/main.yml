@@ -4,11 +4,9 @@ on:
   pull_request:
     branches:
       - master
-      - new-arch
   push:
     branches:
       - master
-      - new-arch
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

@@ -86,7 +86,12 @@
   "codegenConfig": {
     "name": "RNCImageEditorSpec",
     "type": "modules",
-    "jsSrcsDir": "src"
+    "jsSrcsDir": "src",
+    "libraries": [{
+      "name": "RNCImageEditorSpec",
+      "type": "modules",
+      "jsSrcsDir": "src"
+    }]
   },
   "react-native-builder-bob": {
     "source": "src",
