@@ -5,7 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import NativeRNCImageEditor from './NativeRNCImageEditor';
 import type { Spec } from './NativeRNCImageEditor';
 
 const LINKING_ERROR =
@@ -14,23 +15,13 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-// @ts-expect-error
-const isTurboModuleEnabled = global.__turboModuleProxy != null;
-
-const RNCImageEditorModule = isTurboModuleEnabled
-  ? require('./NativeRNCImageEditor').default
-  : NativeModules.RNCImageEditor;
-
-const RNCImageEditor: Spec = RNCImageEditorModule
-  ? RNCImageEditorModule
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      }
-    );
+const RNCImageEditor: Spec = NativeRNCImageEditor
+  ? NativeRNCImageEditor
+  : new Proxy({} as Spec, {
+      get() {
+        throw new Error(LINKING_ERROR);
+      },
+    });
 
 type ImageCropDataFromSpec = Parameters<Spec['cropImage']>[1];
 

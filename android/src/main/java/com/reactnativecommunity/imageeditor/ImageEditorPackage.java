@@ -9,11 +9,13 @@ package com.reactnativecommunity.imageeditor;
 
 import androidx.annotation.Nullable;
 
+import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
-import com.facebook.react.TurboReactPackage;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,21 +34,32 @@ public class ImageEditorPackage extends TurboReactPackage {
 
   @Override
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
-    return () -> {
-      final Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
-      boolean isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
-      moduleInfos.put(
-        ImageEditorModule.NAME,
+    Class<? extends NativeModule>[] moduleList = new Class[] {
+      ImageEditorModule.class
+    };
+    final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
+
+    for (Class<? extends NativeModule> moduleClass : moduleList) {
+      ReactModule reactModule = moduleClass.getAnnotation(ReactModule.class);
+      reactModuleInfoMap.put(
+        reactModule.name(),
         new ReactModuleInfo(
-          ImageEditorModule.NAME,
-          ImageEditorModule.NAME,
-          false, // canOverrideExistingModule
-          false, // needsEagerInit
-          true, // hasConstants
-          false, // isCxxModule
-          isTurboModule // isTurboModule
-        ));
-      return moduleInfos;
+          reactModule.name(),
+          moduleClass.getName(),
+          true,
+          reactModule.needsEagerInit(),
+          reactModule.hasConstants(),
+          reactModule.isCxxModule(),
+          TurboModule.class.isAssignableFrom(moduleClass)
+        )
+      );
+    }
+
+    return new ReactModuleInfoProvider() {
+      @Override
+      public Map<String, ReactModuleInfo> getReactModuleInfos() {
+        return reactModuleInfoMap;
+      }
     };
   }
 }

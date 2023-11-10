@@ -56,8 +56,7 @@ jobs:
       max-parallel: 4
       matrix:
         new_arch_enabled: [ 1, 0 ]
-        rn_ver: [latest] # also, can be any npm tag: 0.71-stable, next, nightly or version: 0.68, 0.70 ...
-
+        rn_ver: [latest ] # also, can be any npm tag: 0.71-stable, next, nightly
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -71,8 +70,6 @@ jobs:
           module-to-install: file:${{ github.workspace }}
           store-artifacts: true
           platform: android
-          node-version: ${{ contains(matrix.rn_ver, '0.5') && '14' || contains(matrix.rn_ver, '0.6') && '16' || '18' }}
-          java-version: ${{ contains(matrix.rn_ver, '0.5') && '8' || contains(matrix.rn_ver, '0.6') && '11' || '17' }}
 
   build-ios:
     name: Build iOS
@@ -82,10 +79,7 @@ jobs:
       max-parallel: 3
       matrix:
         new_arch_enabled: [ 1, 0 ]
-        rn_ver: [latest] # also, can be any npm tag: 0.71-stable, next, nightly or version: 0.68, 0.70 ...
-
-
-
+        rn_ver: [latest ] # also, can be any npm tag: 0.71-stable, next, nightly
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -98,5 +92,3 @@ jobs:
           module-to-install: file:${{ github.workspace }}
           store-artifacts: true
           platform: ios
-          node-version: ${{ contains(matrix.rn_ver, '0.5') && '14' || contains(matrix.rn_ver, '0.6') && '16' || '18' }}
-          java-version: ${{ contains(matrix.rn_ver, '0.5') && '8' || contains(matrix.rn_ver, '0.6') && '11' || '17' }}

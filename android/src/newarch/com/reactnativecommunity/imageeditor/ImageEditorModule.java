@@ -1,13 +1,13 @@
 package com.reactnativecommunity.imageeditor;
 
-import android.os.AsyncTask;
-
 import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.module.annotations.ReactModule;
 
+@ReactModule(name = ImageEditorModule.NAME)
 public class ImageEditorModule extends NativeRNCImageEditorSpec {
   private ImageEditorModuleImpl moduleImpl;
 

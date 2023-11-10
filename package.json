@@ -87,11 +87,9 @@
     "name": "RNCImageEditorSpec",
     "type": "modules",
     "jsSrcsDir": "src",
-    "libraries": [{
-      "name": "RNCImageEditorSpec",
-      "type": "modules",
-      "jsSrcsDir": "src"
-    }]
+    "android": {
+      "javaPackageName": "com.reactnativecommunity.imageeditor"
+    }
   },
   "react-native-builder-bob": {
     "source": "src",

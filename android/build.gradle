@@ -74,7 +74,7 @@ android {
   sourceSets {
     main {
       if (isNewArchitectureEnabled()) {
-        java.srcDirs += ["src/newarch"]
+        java.srcDirs += ["src/newarch", "${project.buildDir}/generated/source/codegen/java"]
       } else {
         java.srcDirs += ["src/oldarch"]
       }
@@ -92,12 +92,4 @@ dependencies {
   // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
-}
-
-if (isNewArchitectureEnabled()) {
-  react {
-    jsRootDir = file("../src/")
-    libraryName = "RNCImageEditor"
-    codegenJavaPackageName = "com.reactnativecommunity.imageeditor"
-  }
 }
