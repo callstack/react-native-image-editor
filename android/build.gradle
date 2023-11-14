@@ -5,15 +5,21 @@ buildscript {
   }
 
   def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['RNImageEditor_kotlinVersion']
+  def spotless_version = project.properties['RNImageEditor_spotlessVersion']
 
   dependencies {
     classpath "com.android.tools.build:gradle:7.2.1"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    classpath "com.diffplug.spotless:spotless-plugin-gradle:$spotless_version"
   }
 }
 
 def isNewArchitectureEnabled() {
   return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
+}
+
+if (project == rootProject) {
+  apply from: 'spotless.gradle'
 }
 
 apply plugin: "com.android.library"

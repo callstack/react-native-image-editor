@@ -48,6 +48,8 @@
   "scripts": {
     "ts": "yarn tsc --noEmit",
     "lint": "eslint '**/*.{js,ts,tsx}'",
+    "lint:android": "./android/gradlew -p android spotlessCheck --quiet",
+    "format:android": "./android/gradlew -p android spotlessapply",
     "release": "release-it",
     "build": "bob build",
     "prepack": "yarn run build"
