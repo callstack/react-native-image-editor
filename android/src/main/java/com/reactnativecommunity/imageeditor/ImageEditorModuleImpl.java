@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 package com.reactnativecommunity.imageeditor;
 
 import javax.annotation.Nullable;
@@ -18,9 +17,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
@@ -43,23 +40,20 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
 
-/**
- * Native module that provides image cropping functionality.
- */
-public class ImageEditorModule extends ReactContextBaseJavaModule {
+public class ImageEditorModuleImpl {
+  private ReactApplicationContext reactContext;
 
   protected static final String NAME = "RNCImageEditor";
 
   private static final List<String> LOCAL_URI_PREFIXES = Arrays.asList(
-          ContentResolver.SCHEME_FILE,
-          ContentResolver.SCHEME_CONTENT,
-          ContentResolver.SCHEME_ANDROID_RESOURCE
+    ContentResolver.SCHEME_FILE,
+    ContentResolver.SCHEME_CONTENT,
+    ContentResolver.SCHEME_ANDROID_RESOURCE
   );
 
   private static final String TEMP_FILE_PREFIX = "ReactNative_cropped_image_";
@@ -95,24 +89,13 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
     ExifInterface.TAG_WHITE_BALANCE
   };
 
-  public ImageEditorModule(ReactApplicationContext reactContext) {
-    super(reactContext);
-    new CleanTask(getReactApplicationContext()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+  public ImageEditorModuleImpl(ReactApplicationContext context) {
+    reactContext = context;
+    new CleanTask(reactContext).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
-  @Override
-  public String getName() {
-    return NAME;
-  }
-
-  @Override
-  public Map<String, Object> getConstants() {
-    return Collections.emptyMap();
-  }
-
-  @Override
   public void onCatalystInstanceDestroy() {
-    new CleanTask(getReactApplicationContext()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    new CleanTask(reactContext).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   /**
@@ -139,12 +122,12 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
 
     private void cleanDirectory(File directory) {
       File[] toDelete = directory.listFiles(
-          new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String filename) {
-              return filename.startsWith(TEMP_FILE_PREFIX);
-            }
-          });
+        new FilenameFilter() {
+          @Override
+          public boolean accept(File dir, String filename) {
+            return filename.startsWith(TEMP_FILE_PREFIX);
+          }
+        });
       if (toDelete != null) {
         for (File file: toDelete) {
           file.delete();
@@ -166,16 +149,15 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
    * @param promise Promise to be resolved when the image has been cropped; the only argument that
    *        is passed to this is the file:// URI of the new image
    */
-  @ReactMethod
   public void cropImage(
-      String uri,
-      ReadableMap options,
-      Promise promise) {
+    String uri,
+    ReadableMap options,
+    Promise promise) {
     ReadableMap offset = options.hasKey("offset") ? options.getMap("offset") : null;
     ReadableMap size = options.hasKey("size") ? options.getMap("size") : null;
     if (offset == null || size == null ||
-        !offset.hasKey("x") || !offset.hasKey("y") ||
-        !size.hasKey("width") || !size.hasKey("height")) {
+      !offset.hasKey("x") || !offset.hasKey("y") ||
+      !size.hasKey("width") || !size.hasKey("height")) {
       throw new JSApplicationIllegalArgumentException("Please specify offset and size");
     }
     if (uri == null || uri.isEmpty()) {
@@ -183,13 +165,13 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
     }
 
     CropTask cropTask = new CropTask(
-        getReactApplicationContext(),
-        uri,
-        (int) offset.getDouble("x"),
-        (int) offset.getDouble("y"),
-        (int) size.getDouble("width"),
-        (int) size.getDouble("height"),
-        promise);
+      reactContext,
+      uri,
+      (int) offset.getDouble("x"),
+      (int) offset.getDouble("y"),
+      (int) size.getDouble("width"),
+      (int) size.getDouble("height"),
+      promise);
     if (options.hasKey("displaySize")) {
       ReadableMap targetSize = options.getMap("displaySize");
       cropTask.setTargetSize(
@@ -211,17 +193,17 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
     final Promise mPromise;
 
     private CropTask(
-        ReactContext context,
-        String uri,
-        int x,
-        int y,
-        int width,
-        int height,
-        Promise promise) {
+      ReactContext context,
+      String uri,
+      int x,
+      int y,
+      int width,
+      int height,
+      Promise promise) {
       super(context);
       if (x < 0 || y < 0 || width <= 0 || height <= 0) {
         throw new JSApplicationIllegalArgumentException(String.format(
-            "Invalid crop rectangle: [%d, %d, %d, %d]", x, y, width, height));
+          "Invalid crop rectangle: [%d, %d, %d, %d]", x, y, width, height));
       }
       mContext = context;
       mUri = uri;
@@ -235,7 +217,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
     public void setTargetSize(int width, int height) {
       if (width <= 0 || height <= 0) {
         throw new JSApplicationIllegalArgumentException(String.format(
-            "Invalid target size: [%d, %d]", width, height));
+          "Invalid target size: [%d, %d]", width, height));
       }
       mTargetWidth = width;
       mTargetHeight = height;
@@ -314,10 +296,10 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
      * @param outOptions Bitmap options, useful to determine {@code outMimeType}.
      */
     private Bitmap cropAndResize(
-        int targetWidth,
-        int targetHeight,
-        BitmapFactory.Options outOptions)
-        throws IOException {
+      int targetWidth,
+      int targetHeight,
+      BitmapFactory.Options outOptions)
+      throws IOException {
       Assertions.assertNotNull(outOptions);
 
       // Loading large bitmaps efficiently:
@@ -450,7 +432,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
   }
 
   private static void writeCompressedBitmapToFile(Bitmap cropped, String mimeType, File tempFile)
-      throws IOException {
+    throws IOException {
     OutputStream out = new FileOutputStream(tempFile);
     try {
       cropped.compress(getCompressFormatForType(mimeType), COMPRESS_QUALITY, out);
@@ -468,7 +450,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
    * @param mimeType the MIME type of the file to create (image/*)
    */
   private static File createTempFile(Context context, @Nullable String mimeType)
-      throws IOException {
+    throws IOException {
     File externalCacheDir = context.getExternalCacheDir();
     File internalCacheDir = context.getCacheDir();
     File cacheDir;
@@ -482,7 +464,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
       cacheDir = externalCacheDir;
     } else {
       cacheDir = externalCacheDir.getFreeSpace() > internalCacheDir.getFreeSpace() ?
-          externalCacheDir : internalCacheDir;
+        externalCacheDir : internalCacheDir;
     }
     return File.createTempFile(TEMP_FILE_PREFIX, getFileExtensionForType(mimeType), cacheDir);
   }
@@ -499,7 +481,7 @@ public class ImageEditorModule extends ReactContextBaseJavaModule {
       int halfHeight = height / 2;
       int halfWidth = width / 2;
       while ((halfWidth / inSampleSize) >= targetWidth
-          && (halfHeight / inSampleSize) >= targetHeight) {
+        && (halfHeight / inSampleSize) >= targetHeight) {
         inSampleSize *= 2;
       }
     }

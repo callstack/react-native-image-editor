@@ -83,6 +83,14 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
+  "codegenConfig": {
+    "name": "RNCImageEditorSpec",
+    "type": "modules",
+    "jsSrcsDir": "src",
+    "android": {
+      "javaPackageName": "com.reactnativecommunity.imageeditor"
+    }
+  },
   "react-native-builder-bob": {
     "source": "src",
     "output": "lib",
