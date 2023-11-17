@@ -22,10 +22,6 @@ npm install @react-native-community/image-editor --save
 
 `npx pod-install`
 
-### Link
-
-`react-native link @react-native-community/image-editor`
-
 ## Usage
 
 Start by importing the library:
