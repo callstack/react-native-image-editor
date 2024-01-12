@@ -49,6 +49,7 @@ ImageEditor.cropImage(uri, cropData).then(url => {
 | `size`        | Yes      | Size (dimensions) of the cropped image                                                                                     |
 | `displaySize` | No       | Size to which you want to scale the cropped image                                                                          |
 | `resizeMode`  | No       | Resizing mode to use when scaling the image (iOS only, android resize mode is always 'cover') **Default value**: 'contain' |
+| `quality`     | No       | The quality of the resulting image, expressed as a value from `0.0` to `1.0`. <br/>The value `0.0` represents the maximum compression (or lowest quality) while the value `1.0` represents the least compression (or best quality).<br/>iOS supports only `JPEG` format, while Android supports both `JPEG`, `WEBP` and `PNG` formats.<br/>**Default value**:  (iOS: `1`), (Android: `0.9`) |
 
 ```ts
 cropData: ImageCropData = {
@@ -56,6 +57,7 @@ cropData: ImageCropData = {
   size: {width: number, height: number},
   displaySize: {width: number, height: number},
   resizeMode: 'contain' | 'cover' | 'stretch',
+  quality: number // 0...1
 };
 ```
 

@@ -90,6 +90,8 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
     fun cropImage(uri: String?, options: ReadableMap, promise: Promise) {
         val offset = if (options.hasKey("offset")) options.getMap("offset") else null
         val size = if (options.hasKey("size")) options.getMap("size") else null
+        val quality =
+            if (options.hasKey("quality")) (options.getDouble("quality") * 100).toInt() else 90
         if (
             offset == null ||
                 size == null ||
@@ -102,6 +104,12 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         }
         if (uri.isNullOrEmpty()) {
             throw JSApplicationIllegalArgumentException("Please specify a URI")
+        }
+        if (quality > 100 || quality < 0) {
+            promise.reject(
+                JSApplicationIllegalArgumentException("quality must be a number between 0 and 1")
+            )
+            return
         }
         val x = offset.getDouble("x").toInt()
         val y = offset.getDouble("y").toInt()
@@ -144,7 +152,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
                 }
 
                 val tempFile = createTempFile(reactContext, mimeType)
-                writeCompressedBitmapToFile(cropped, mimeType, tempFile)
+                writeCompressedBitmapToFile(cropped, mimeType, tempFile, quality)
                 if (mimeType == "image/jpeg") {
                     copyExif(reactContext, Uri.parse(uri), tempFile)
                 }
@@ -275,9 +283,6 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
             )
         private const val TEMP_FILE_PREFIX = "ReactNative_cropped_image_"
 
-        /** Compress quality of the output file. */
-        private const val COMPRESS_QUALITY = 90
-
         @SuppressLint("InlinedApi")
         private val EXIF_ATTRIBUTES =
             arrayOf(
@@ -374,9 +379,14 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         }
 
         @Throws(IOException::class)
-        private fun writeCompressedBitmapToFile(cropped: Bitmap, mimeType: String, tempFile: File) {
+        private fun writeCompressedBitmapToFile(
+            cropped: Bitmap,
+            mimeType: String,
+            tempFile: File,
+            compressQuality: Int
+        ) {
             FileOutputStream(tempFile).use {
-                cropped.compress(getCompressFormatForType(mimeType), COMPRESS_QUALITY, it)
+                cropped.compress(getCompressFormatForType(mimeType), compressQuality, it)
             }
         }
 
