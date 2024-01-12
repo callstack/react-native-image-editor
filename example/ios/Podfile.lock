@@ -807,9 +807,23 @@ PODS:
   - React-jsinspector (0.72.6)
   - React-logger (0.72.6):
     - glog
-  - react-native-image-editor (2.3.0):
-    - React
+  - react-native-image-editor (3.0.0):
+    - RCT-Folly (= 2021.07.22.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-graphics
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
     - React-RCTImage
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - React-NativeModulesApple (0.72.6):
     - React-callinvoker
     - React-Core
@@ -1115,7 +1129,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: faca9c368233f59ed24601aca0185870466a96e9
   React-jsinspector: 194e32c6aab382d88713ad3dd0025c5f5c4ee072
   React-logger: cebf22b6cf43434e471dc561e5911b40ac01d289
-  react-native-image-editor: fc444bd0c9ffbc12bb6f46177773e88dc2d9c5b9
+  react-native-image-editor: 2d9fddfd0a036db8f031c2789293c91497b534fb
   React-NativeModulesApple: 63505fb94b71e2469cab35bdaf36cca813cb5bfd
   React-perflogger: e3596db7e753f51766bceadc061936ef1472edc3
   React-RCTActionSheet: 17ab132c748b4471012abbcdcf5befe860660485

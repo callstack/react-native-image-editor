@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { Image, Platform, ScrollView } from 'react-native';
 
-import type { ImageSourcePropType, StyleProp, ViewStyle } from 'react-native';
-import type { ImageCropData, ImageOffset, ImageSize } from './types';
 import { NativeSyntheticEvent } from 'react-native/Libraries/Types/CoreEventTypes';
 import { NativeScrollEvent } from 'react-native/Libraries/Components/ScrollView/ScrollView';
+
+import type { ImageSourcePropType, StyleProp, ViewStyle } from 'react-native';
+import type { ImageCropData, ImageOffset, ImageSize } from './types';
 
 export interface ImageCropperProps {
   image: ImageSize & ImageSourcePropType;
@@ -115,6 +116,7 @@ export class ImageCropper extends Component<ImageCropperProps> {
       >
         <Image
           testID="testImage"
+          accessibilityIgnoresInvertColors
           source={this.props.image}
           style={this._scaledImageSize}
         />
