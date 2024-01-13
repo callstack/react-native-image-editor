@@ -76,3 +76,6 @@ lefthook.yml
 # testing
 /coverage
 .cxx
+
+# eslint
+.eslintcache

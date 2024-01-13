@@ -9,10 +9,10 @@ import {
 } from 'react-native';
 import ImageEditor from '@react-native-community/image-editor';
 
+import type { LayoutChangeEvent } from 'react-native';
 import { DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT } from './constants';
 import { ImageCropper } from './ImageCropper';
 
-import type { LayoutChangeEvent } from 'react-native';
 import type { ImageCropData, ImageSize } from './types';
 
 interface State {
@@ -90,6 +90,7 @@ export class SquareImageCropper extends Component<Props, State> {
           onTransformDataChange={this._onTransformDataChange}
         />
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.cropButtonTouchable}
           onPress={this._crop}
         >
@@ -107,10 +108,12 @@ export class SquareImageCropper extends Component<Props, State> {
       <SafeAreaView style={styles.container}>
         <Text style={styles.text}>Here is the cropped image</Text>
         <Image
+          accessibilityIgnoresInvertColors
           source={{ uri: this.state.croppedImageURI }}
           style={[styles.imageCropper, this.state.measuredSize]}
         />
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.cropButtonTouchable}
           onPress={this._reset}
         >
