@@ -56,6 +56,10 @@ RCT_EXPORT_MODULE()
   }
   NSString *displaySize = data.resizeMode();
   NSURLRequest *imageRequest = [NSURLRequest requestWithURL:[NSURL URLWithString: uri]];
+  CGFloat compressionQuality = 1;
+  if (data.quality().has_value()) {
+    compressionQuality = *data.quality();
+  }
 #else
 RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
                   cropData:(NSDictionary *)cropData
@@ -69,6 +73,10 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
   if(displaySize){
     targetSize = [RCTConvert CGSize:cropData[@"displaySize"]];
   }
+  CGFloat compressionQuality = 1;
+  if(cropData[@"quality"]){
+      compressionQuality = [RCTConvert CGFloat:cropData[@"quality"]];
+  }
 #endif
   CGRect rect = {offset,size};
   NSURL *url = [imageRequest URL];
@@ -78,6 +86,10 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
   [[_bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES] loadImageWithURLRequest:imageRequest callback:^(NSError *error, UIImage *image) {
     if (error) {
       reject(@(error.code).stringValue, error.description, error);
+      return;
+    }
+    if (compressionQuality > 1 || compressionQuality < 0) {
+      reject(RCTErrorUnspecified, @("quality must be a number between 0 and 1"), nil);
       return;
     }
 
@@ -104,7 +116,7 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     }
     else{
 
-      imageData = UIImageJPEGRepresentation(croppedImage, 1);
+      imageData = UIImageJPEGRepresentation(croppedImage, compressionQuality);
       path = [RNCFileSystem generatePathInDirectory:[[RNCFileSystem cacheDirectoryPath] stringByAppendingPathComponent:@"ReactNative_cropped_image_"] withExtension:@".jpg"];
     }
 

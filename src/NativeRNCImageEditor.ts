@@ -1,5 +1,5 @@
 import type { TurboModule } from 'react-native';
-import type { Double } from 'react-native/Libraries/Types/CodegenTypes';
+import type { Double, Float } from 'react-native/Libraries/Types/CodegenTypes';
 import { TurboModuleRegistry } from 'react-native';
 
 export interface Spec extends TurboModule {
@@ -35,6 +35,11 @@ export interface Spec extends TurboModule {
        * `displaySize` param is not specified, this has no effect.
        */
       resizeMode?: string;
+
+      /**
+       * (Optional) Compression quality jpg images (number from 0 to 1).
+       */
+      quality?: Float;
     }
   ): Promise<string>;
 }
