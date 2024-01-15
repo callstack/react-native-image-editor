@@ -20,7 +20,9 @@ npm install @react-native-community/image-editor --save
 
 ### Install Pods
 
-`npx pod-install`
+```shell
+npx pod-install
+```
 
 ## Usage
 
@@ -61,7 +63,7 @@ cropData: ImageCropData = {
 };
 ```
 
-For more advanced usage check our [example app](/example/src/App.js).
+For more advanced usage check our [example app](/example/src/App.tsx).
 
 <!-- badges -->
 [build-badge]: https://github.com/callstack/react-native-image-editor/actions/workflows/main.yml/badge.svg
