@@ -26,7 +26,7 @@ const RNCImageEditor: Spec = NativeRNCImageEditor
 type ImageCropDataFromSpec = Parameters<Spec['cropImage']>[1];
 
 export interface ImageCropData
-  extends Pick<ImageCropDataFromSpec, 'offset' | 'size' | 'displaySize'> {
+  extends Omit<ImageCropDataFromSpec, 'resizeMode'> {
   resizeMode?: 'contain' | 'cover' | 'stretch';
   // ^^^ codegen doesn't support union types yet
   // so to provide more type safety we override the type here
