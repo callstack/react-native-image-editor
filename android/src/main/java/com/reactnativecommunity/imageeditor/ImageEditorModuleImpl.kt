@@ -19,6 +19,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.text.TextUtils
+import android.util.Base64 as AndroidUtilBase64
 import androidx.exifinterface.media.ExifInterface
 import com.facebook.common.logging.FLog
 import com.facebook.infer.annotation.Assertions
@@ -27,11 +28,13 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.ReactConstants
+import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.net.URL
+import java.util.Base64
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -265,7 +268,14 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
     }
 
     private fun openBitmapInputStream(uri: String): InputStream? {
-        return if (isLocalUri(uri)) {
+        return if (uri.startsWith("data:")) {
+            val src = uri.substring(uri.indexOf(",") + 1)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                ByteArrayInputStream(Base64.getMimeDecoder().decode(src))
+            } else {
+                ByteArrayInputStream(AndroidUtilBase64.decode(src, AndroidUtilBase64.DEFAULT))
+            }
+        } else if (isLocalUri(uri)) {
             reactContext.contentResolver.openInputStream(Uri.parse(uri))
         } else {
             val connection = URL(uri).openConnection()
