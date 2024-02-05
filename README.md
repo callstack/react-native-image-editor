@@ -29,7 +29,7 @@ npx pod-install
 Start by importing the library:
 
 ```ts
-import ImageEditor from "@react-native-community/image-editor";
+import ImageEditor from '@react-native-community/image-editor';
 ```
 
 ### Crop image
@@ -39,19 +39,22 @@ Crop the image specified by the URI param. If URI points to a remote image, it w
 If the cropping process is successful, the resultant cropped image will be stored in the cache path, and the URI returned in the promise will point to the image in the cache path. Remember to delete the cropped image from the cache path when you are done with it.
 
 ```ts
-ImageEditor.cropImage(uri, cropData).then(url => {
-  console.log("Cropped image uri", url);
-})
+ImageEditor.cropImage(uri, cropData).then((url) => {
+  console.log('Cropped image uri', url);
+  // In case of Web, the `url` is the base64 string
+});
 ```
 
 ### `cropData: ImageCropData`
-| Property      | Required | Description                                                                                                                |
-|---------------|----------|----------------------------------------------------------------------------------------------------------------------------|
-| `offset`      | Yes      | The top-left corner of the cropped image, specified in the original image's coordinate space                               |
-| `size`        | Yes      | Size (dimensions) of the cropped image                                                                                     |
-| `displaySize` | No       | Size to which you want to scale the cropped image                                                                          |
-| `resizeMode`  | No       | Resizing mode to use when scaling the image (iOS only, android resize mode is always 'cover') **Default value**: 'contain' |
-| `quality`     | No       | The quality of the resulting image, expressed as a value from `0.0` to `1.0`. <br/>The value `0.0` represents the maximum compression (or lowest quality) while the value `1.0` represents the least compression (or best quality).<br/>iOS supports only `JPEG` format, while Android supports both `JPEG`, `WEBP` and `PNG` formats.<br/>**Default value**:  (iOS: `1`), (Android: `0.9`) |
+
+| Property      | Required | Description                                                                                                                                                                                                                                                                                                                                                                                    |
+| ------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `offset`      | Yes      | The top-left corner of the cropped image, specified in the original image's coordinate space                                                                                                                                                                                                                                                                                                   |
+| `size`        | Yes      | Size (dimensions) of the cropped image                                                                                                                                                                                                                                                                                                                                                         |
+| `displaySize` | No       | Size to which you want to scale the cropped image                                                                                                                                                                                                                                                                                                                                              |
+| `resizeMode`  | No       | Resizing mode to use when scaling the image (iOS only, Android resize mode is always 'cover', Web - no support) **Default value**: 'contain'                                                                                                                                                                                                                                                   |
+| `quality`     | No       | The quality of the resulting image, expressed as a value from `0.0` to `1.0`. <br/>The value `0.0` represents the maximum compression (or lowest quality) while the value `1.0` represents the least compression (or best quality).<br/>iOS supports only `JPEG` format, while Android/Web supports both `JPEG`, `WEBP` and `PNG` formats.<br/>**Default value**: (iOS: `1`), (Android: `0.9`) |
+| `format`      | No       | **(WEB ONLY)** The format of the resulting image, possible values are `jpeg`, `png`, `webp`, **Default value**: `jpeg`                                                                                                                                                                                                                                                                         |
 
 ```ts
 cropData: ImageCropData = {
@@ -59,13 +62,15 @@ cropData: ImageCropData = {
   size: {width: number, height: number},
   displaySize: {width: number, height: number},
   resizeMode: 'contain' | 'cover' | 'stretch',
-  quality: number // 0...1
+  quality: number, // 0...1
+  format: 'jpeg' | 'png' | 'webp' // web only
 };
 ```
 
 For more advanced usage check our [example app](/example/src/App.tsx).
 
 <!-- badges -->
+
 [build-badge]: https://github.com/callstack/react-native-image-editor/actions/workflows/main.yml/badge.svg
 [build]: https://github.com/callstack/react-native-image-editor/actions/workflows/main.yml
 [version-badge]: https://img.shields.io/npm/v/@react-native-community/image-editor.svg

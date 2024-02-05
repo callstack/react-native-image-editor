@@ -30,6 +30,7 @@ export interface ImageCropData
   resizeMode?: 'contain' | 'cover' | 'stretch';
   // ^^^ codegen doesn't support union types yet
   // so to provide more type safety we override the type here
+  format?: 'png' | 'jpeg' | 'webp'; // web only
 }
 
 class ImageEditor {
