@@ -193,8 +193,28 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
                 } else {
                     @Suppress("DEPRECATION") BitmapRegionDecoder.newInstance(it, false)
                 }
+
+            val imageHeight: Int = decoder!!.height
+            val imageWidth: Int = decoder!!.width
+            val orientation = getOrientation(reactContext, Uri.parse(uri))
+
+            val (left, top) =
+                when (orientation) {
+                    90 -> y to imageHeight - width - x
+                    180 -> imageWidth - width - x to imageHeight - height - y
+                    270 -> imageWidth - height - y to x
+                    else -> x to y
+                }
+
+            val (right, bottom) =
+                when (orientation) {
+                    90,
+                    270 -> left + height to top + width
+                    else -> left + width to top + height
+                }
+
             return@use try {
-                val rect = Rect(x, y, x + width, y + height)
+                val rect = Rect(left, top, right, bottom)
                 decoder!!.decodeRegion(rect, outOptions)
             } finally {
                 decoder!!.recycle()
@@ -218,12 +238,12 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
     private fun cropAndResizeTask(
         outOptions: BitmapFactory.Options,
         uri: String,
-        x: Int,
-        y: Int,
-        width: Int,
-        height: Int,
-        targetWidth: Int,
-        targetHeight: Int,
+        xPos: Int,
+        yPos: Int,
+        rectWidth: Int,
+        rectHeight: Int,
+        outputWidth: Int,
+        outputHeight: Int,
     ): Bitmap? {
         Assertions.assertNotNull(outOptions)
 
@@ -233,6 +253,35 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         // This uses scaling mode COVER
 
         // Where would the crop rect end up within the scaled bitmap?
+
+        val bitmap =
+            openBitmapInputStream(uri)?.use {
+                // This can use significantly less memory than decoding the full-resolution bitmap
+                BitmapFactory.decodeStream(it, null, outOptions)
+            } ?: return null
+
+        val orientation = getOrientation(reactContext, Uri.parse(uri))
+        val (x, y) =
+            when (orientation) {
+                90 -> yPos to bitmap.height - rectWidth - xPos
+                270 -> bitmap.width - rectHeight - yPos to xPos
+                180 -> bitmap.width - rectWidth - xPos to bitmap.height - rectHeight - yPos
+                else -> xPos to yPos
+            }
+
+        val (width, height) =
+            when (orientation) {
+                90,
+                270 -> rectHeight to rectWidth
+                else -> rectWidth to rectHeight
+            }
+        val (targetWidth, targetHeight) =
+            when (orientation) {
+                90,
+                270 -> outputHeight to outputWidth
+                else -> outputWidth to outputHeight
+            }
+
         val cropRectRatio = width / height.toFloat()
         val targetRatio = targetWidth / targetHeight.toFloat()
         val isCropRatioLargerThanTargetRatio = cropRectRatio > targetRatio
@@ -250,11 +299,6 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         // Decode the bitmap. We have to open the stream again, like in the example linked above.
         // Is there a way to just continue reading from the stream?
         outOptions.inSampleSize = getDecodeSampleSize(width, height, targetWidth, targetHeight)
-        val bitmap =
-            openBitmapInputStream(uri)?.use {
-                // This can use significantly less memory than decoding the full-resolution bitmap
-                BitmapFactory.decodeStream(it, null, outOptions)
-            } ?: return null
 
         val cropX = (newX / outOptions.inSampleSize.toFloat()).roundToInt()
         val cropY = (newY / outOptions.inSampleSize.toFloat()).roundToInt()
@@ -296,30 +340,119 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         @SuppressLint("InlinedApi")
         private val EXIF_ATTRIBUTES =
             arrayOf(
+                ExifInterface.TAG_APERTURE_VALUE,
+                ExifInterface.TAG_MAX_APERTURE_VALUE,
+                ExifInterface.TAG_METERING_MODE,
+                ExifInterface.TAG_ARTIST,
+                ExifInterface.TAG_BITS_PER_SAMPLE,
+                ExifInterface.TAG_COMPRESSION,
+                ExifInterface.TAG_BODY_SERIAL_NUMBER,
+                ExifInterface.TAG_BRIGHTNESS_VALUE,
+                ExifInterface.TAG_CONTRAST,
+                ExifInterface.TAG_CAMERA_OWNER_NAME,
+                ExifInterface.TAG_COLOR_SPACE,
+                ExifInterface.TAG_COPYRIGHT,
                 ExifInterface.TAG_DATETIME,
                 ExifInterface.TAG_DATETIME_DIGITIZED,
+                ExifInterface.TAG_DATETIME_ORIGINAL,
+                ExifInterface.TAG_DEVICE_SETTING_DESCRIPTION,
+                ExifInterface.TAG_DIGITAL_ZOOM_RATIO,
+                ExifInterface.TAG_EXIF_VERSION,
+                ExifInterface.TAG_EXPOSURE_BIAS_VALUE,
+                ExifInterface.TAG_EXPOSURE_INDEX,
+                ExifInterface.TAG_EXPOSURE_MODE,
                 ExifInterface.TAG_EXPOSURE_TIME,
+                ExifInterface.TAG_EXPOSURE_PROGRAM,
                 ExifInterface.TAG_FLASH,
+                ExifInterface.TAG_FLASH_ENERGY,
                 ExifInterface.TAG_FOCAL_LENGTH,
+                ExifInterface.TAG_FOCAL_LENGTH_IN_35MM_FILM,
+                ExifInterface.TAG_FOCAL_PLANE_RESOLUTION_UNIT,
+                ExifInterface.TAG_FOCAL_PLANE_X_RESOLUTION,
+                ExifInterface.TAG_FOCAL_PLANE_Y_RESOLUTION,
+                ExifInterface.TAG_PHOTOMETRIC_INTERPRETATION,
+                ExifInterface.TAG_PLANAR_CONFIGURATION,
+                ExifInterface.TAG_F_NUMBER,
+                ExifInterface.TAG_GAIN_CONTROL,
+                ExifInterface.TAG_GAMMA,
                 ExifInterface.TAG_GPS_ALTITUDE,
                 ExifInterface.TAG_GPS_ALTITUDE_REF,
+                ExifInterface.TAG_GPS_AREA_INFORMATION,
                 ExifInterface.TAG_GPS_DATESTAMP,
+                ExifInterface.TAG_GPS_DOP,
                 ExifInterface.TAG_GPS_LATITUDE,
                 ExifInterface.TAG_GPS_LATITUDE_REF,
                 ExifInterface.TAG_GPS_LONGITUDE,
                 ExifInterface.TAG_GPS_LONGITUDE_REF,
+                ExifInterface.TAG_GPS_STATUS,
+                ExifInterface.TAG_GPS_DEST_BEARING,
+                ExifInterface.TAG_GPS_DEST_BEARING_REF,
+                ExifInterface.TAG_GPS_DEST_DISTANCE,
+                ExifInterface.TAG_GPS_DEST_DISTANCE_REF,
+                ExifInterface.TAG_GPS_DEST_LATITUDE,
+                ExifInterface.TAG_GPS_DEST_LATITUDE_REF,
+                ExifInterface.TAG_GPS_DEST_LONGITUDE,
+                ExifInterface.TAG_GPS_DEST_LONGITUDE_REF,
+                ExifInterface.TAG_GPS_DIFFERENTIAL,
+                ExifInterface.TAG_GPS_IMG_DIRECTION,
+                ExifInterface.TAG_GPS_IMG_DIRECTION_REF,
+                ExifInterface.TAG_GPS_MAP_DATUM,
+                ExifInterface.TAG_GPS_MEASURE_MODE,
                 ExifInterface.TAG_GPS_PROCESSING_METHOD,
+                ExifInterface.TAG_GPS_SATELLITES,
+                ExifInterface.TAG_GPS_SPEED,
+                ExifInterface.TAG_GPS_SPEED_REF,
+                ExifInterface.TAG_GPS_STATUS,
                 ExifInterface.TAG_GPS_TIMESTAMP,
-                ExifInterface.TAG_IMAGE_LENGTH,
-                ExifInterface.TAG_IMAGE_WIDTH,
+                ExifInterface.TAG_GPS_TRACK,
+                ExifInterface.TAG_GPS_TRACK_REF,
+                ExifInterface.TAG_GPS_VERSION_ID,
+                ExifInterface.TAG_IMAGE_DESCRIPTION,
+                ExifInterface.TAG_IMAGE_UNIQUE_ID,
+                ExifInterface.TAG_ISO_SPEED,
+                ExifInterface.TAG_PHOTOGRAPHIC_SENSITIVITY,
+                ExifInterface.TAG_JPEG_INTERCHANGE_FORMAT,
+                ExifInterface.TAG_JPEG_INTERCHANGE_FORMAT_LENGTH,
+                ExifInterface.TAG_LENS_MAKE,
+                ExifInterface.TAG_LENS_MODEL,
+                ExifInterface.TAG_LENS_SERIAL_NUMBER,
+                ExifInterface.TAG_LENS_SPECIFICATION,
+                ExifInterface.TAG_LIGHT_SOURCE,
                 ExifInterface.TAG_MAKE,
+                ExifInterface.TAG_MAKER_NOTE,
                 ExifInterface.TAG_MODEL,
                 ExifInterface.TAG_ORIENTATION,
-                ExifInterface.TAG_SUBSEC_TIME,
+                ExifInterface.TAG_SATURATION,
+                ExifInterface.TAG_SHARPNESS,
+                ExifInterface.TAG_SHUTTER_SPEED_VALUE,
+                ExifInterface.TAG_SOFTWARE,
+                ExifInterface.TAG_SUBJECT_DISTANCE,
+                ExifInterface.TAG_SUBJECT_DISTANCE_RANGE,
+                ExifInterface.TAG_SUBJECT_LOCATION,
+                ExifInterface.TAG_USER_COMMENT,
                 ExifInterface.TAG_WHITE_BALANCE
             )
 
         // Utils
+        private fun getOrientation(context: Context, uri: Uri): Int {
+            val file = getFileFromUri(context, uri)
+            if (file == null) {
+                return 0
+            }
+            val exif = ExifInterface(file.absolutePath)
+            return when (
+                exif.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL
+                )
+            ) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> 90
+                ExifInterface.ORIENTATION_ROTATE_180 -> 180
+                ExifInterface.ORIENTATION_ROTATE_270 -> 270
+                else -> 0
+            }
+        }
+
         @Throws(IOException::class)
         private fun copyExif(context: Context, oldImage: Uri, newFile: File) {
             val oldFile = getFileFromUri(context, oldImage)
