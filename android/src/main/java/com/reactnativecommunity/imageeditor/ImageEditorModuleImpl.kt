@@ -91,6 +91,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
      *   is passed to this is the file:// URI of the new image
      */
     fun cropImage(uri: String?, options: ReadableMap, promise: Promise) {
+        val format = if (options.hasKey("format")) options.getString("format") else null
         val offset = if (options.hasKey("offset")) options.getMap("offset") else null
         val size = if (options.hasKey("size")) options.getMap("size") else null
         val quality =
@@ -149,11 +150,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
                 if (cropped == null) {
                     throw IOException("Cannot decode bitmap: $uri")
                 }
-                val mimeType = outOptions.outMimeType
-                if (mimeType.isNullOrEmpty()) {
-                    throw IOException("Could not determine MIME type")
-                }
-
+                val mimeType = getMimeType(outOptions, format)
                 val tempFile = createTempFile(reactContext, mimeType)
                 writeCompressedBitmapToFile(cropped, mimeType, tempFile, quality)
                 if (mimeType == "image/jpeg") {
@@ -434,6 +431,20 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
             )
 
         // Utils
+        private fun getMimeType(outOptions: BitmapFactory.Options, format: String?): String {
+            val mimeType =
+                when (format) {
+                    "webp" -> "image/webp"
+                    "png" -> "image/png"
+                    "jpeg" -> "image/jpeg"
+                    else -> outOptions.outMimeType
+                }
+            if (mimeType.isNullOrEmpty()) {
+                throw IOException("Could not determine MIME type")
+            }
+            return mimeType
+        }
+
         private fun getOrientation(context: Context, uri: Uri): Int {
             val file = getFileFromUri(context, uri)
             if (file == null) {
