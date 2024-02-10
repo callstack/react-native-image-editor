@@ -440,7 +440,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
                     else -> outOptions.outMimeType
                 }
             if (mimeType.isNullOrEmpty()) {
-                throw IOException("Could not determine MIME type")
+                return "image/jpeg"
             }
             return mimeType
         }
