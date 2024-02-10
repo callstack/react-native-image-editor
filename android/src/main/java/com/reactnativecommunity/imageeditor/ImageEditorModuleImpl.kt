@@ -42,6 +42,12 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
+object MimeType {
+    const val JPEG = "image/jpeg"
+    const val PNG = "image/png"
+    const val WEBP = "image/webp"
+}
+
 class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
     private val moduleCoroutineScope = CoroutineScope(Dispatchers.Default)
 
@@ -153,7 +159,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
                 val mimeType = getMimeType(outOptions, format)
                 val tempFile = createTempFile(reactContext, mimeType)
                 writeCompressedBitmapToFile(cropped, mimeType, tempFile, quality)
-                if (mimeType == "image/jpeg") {
+                if (mimeType == MimeType.JPEG) {
                     copyExif(reactContext, Uri.parse(uri), tempFile)
                 }
                 promise.resolve(Uri.fromFile(tempFile).toString())
@@ -434,13 +440,13 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         private fun getMimeType(outOptions: BitmapFactory.Options, format: String?): String {
             val mimeType =
                 when (format) {
-                    "webp" -> "image/webp"
-                    "png" -> "image/png"
-                    "jpeg" -> "image/jpeg"
+                    "webp" -> MimeType.WEBP
+                    "png" -> MimeType.PNG
+                    "jpeg" -> MimeType.JPEG
                     else -> outOptions.outMimeType
                 }
             if (mimeType.isNullOrEmpty()) {
-                return "image/jpeg"
+                return MimeType.JPEG
             }
             return mimeType
         }
@@ -512,8 +518,8 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
 
         private fun getFileExtensionForType(mimeType: String?): String {
             return when (mimeType) {
-                "image/png" -> ".png"
-                "image/webp" -> ".webp"
+                MimeType.PNG -> ".png"
+                MimeType.WEBP -> ".webp"
                 else -> ".jpg"
             }
         }
@@ -526,8 +532,8 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
                     @Suppress("DEPRECATION") CompressFormat.WEBP
                 }
             return when (mimeType) {
-                "image/png" -> CompressFormat.PNG
-                "image/webp" -> webpCompressFormat
+                MimeType.PNG -> CompressFormat.PNG
+                MimeType.WEBP -> webpCompressFormat
                 else -> CompressFormat.JPEG
             }
         }
