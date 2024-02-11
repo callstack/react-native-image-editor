@@ -40,6 +40,11 @@ export interface Spec extends TurboModule {
        * (Optional) Compression quality jpg images (number from 0 to 1).
        */
       quality?: Float;
+
+      /**
+       * (Optional) The format of the resulting image. Default auto-detection based on given image
+       */
+      format?: string;
     }
   ): Promise<string>;
 }

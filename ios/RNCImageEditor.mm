@@ -46,6 +46,7 @@ RCT_EXPORT_MODULE()
          resolve:(RCTPromiseResolveBlock)resolve
          reject:(RCTPromiseRejectBlock)reject
 {
+  NSString *format = data.format();
   CGSize size = [RCTConvert CGSize:@{ @"width": @(data.size().width()), @"height": @(data.size().height()) }];
   CGPoint offset = [RCTConvert CGPoint:@{ @"x": @(data.offset().x()), @"y": @(data.offset().y()) }];
   CGSize targetSize = size;
@@ -66,6 +67,7 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
+  NSString *format = cropData[@"format"];
   CGSize size = [RCTConvert CGSize:cropData[@"size"]];
   CGPoint offset = [RCTConvert CGPoint:cropData[@"offset"]];
   CGSize targetSize = size;
@@ -82,6 +84,9 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
   NSURL *url = [imageRequest URL];
   NSString *urlPath = [url path];
   NSString *extension = [urlPath pathExtension];
+  if([format isEqualToString:@"png"] || [format isEqualToString:@"jpeg"]){
+    extension = format;
+  }
 
   [[_bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES] loadImageWithURLRequest:imageRequest callback:^(NSError *error, UIImage *image) {
     if (error) {

@@ -42,6 +42,12 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
+object MimeType {
+    const val JPEG = "image/jpeg"
+    const val PNG = "image/png"
+    const val WEBP = "image/webp"
+}
+
 class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
     private val moduleCoroutineScope = CoroutineScope(Dispatchers.Default)
 
@@ -91,6 +97,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
      *   is passed to this is the file:// URI of the new image
      */
     fun cropImage(uri: String?, options: ReadableMap, promise: Promise) {
+        val format = if (options.hasKey("format")) options.getString("format") else null
         val offset = if (options.hasKey("offset")) options.getMap("offset") else null
         val size = if (options.hasKey("size")) options.getMap("size") else null
         val quality =
@@ -149,14 +156,10 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
                 if (cropped == null) {
                     throw IOException("Cannot decode bitmap: $uri")
                 }
-                val mimeType = outOptions.outMimeType
-                if (mimeType.isNullOrEmpty()) {
-                    throw IOException("Could not determine MIME type")
-                }
-
+                val mimeType = getMimeType(outOptions, format)
                 val tempFile = createTempFile(reactContext, mimeType)
                 writeCompressedBitmapToFile(cropped, mimeType, tempFile, quality)
-                if (mimeType == "image/jpeg") {
+                if (mimeType == MimeType.JPEG) {
                     copyExif(reactContext, Uri.parse(uri), tempFile)
                 }
                 promise.resolve(Uri.fromFile(tempFile).toString())
@@ -434,6 +437,20 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
             )
 
         // Utils
+        private fun getMimeType(outOptions: BitmapFactory.Options, format: String?): String {
+            val mimeType =
+                when (format) {
+                    "webp" -> MimeType.WEBP
+                    "png" -> MimeType.PNG
+                    "jpeg" -> MimeType.JPEG
+                    else -> outOptions.outMimeType
+                }
+            if (mimeType.isNullOrEmpty()) {
+                return MimeType.JPEG
+            }
+            return mimeType
+        }
+
         private fun getOrientation(context: Context, uri: Uri): Int {
             val file = getFileFromUri(context, uri)
             if (file == null) {
@@ -501,8 +518,8 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
 
         private fun getFileExtensionForType(mimeType: String?): String {
             return when (mimeType) {
-                "image/png" -> ".png"
-                "image/webp" -> ".webp"
+                MimeType.PNG -> ".png"
+                MimeType.WEBP -> ".webp"
                 else -> ".jpg"
             }
         }
@@ -515,8 +532,8 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
                     @Suppress("DEPRECATION") CompressFormat.WEBP
                 }
             return when (mimeType) {
-                "image/png" -> CompressFormat.PNG
-                "image/webp" -> webpCompressFormat
+                MimeType.PNG -> CompressFormat.PNG
+                MimeType.WEBP -> webpCompressFormat
                 else -> CompressFormat.JPEG
             }
         }
