@@ -48,6 +48,8 @@ function fetchImage(imgSrc: string): Promise<HTMLImageElement> {
   });
 }
 
+const DEFAULT_COMPRESSION_QUALITY = 0.9;
+
 class ImageEditor {
   static cropImage(imgSrc: string, cropData: ImageCropData): Promise<string> {
     /**
@@ -57,7 +59,7 @@ class ImageEditor {
       const canvas = drawImage(image, cropData);
       return canvas.toDataURL(
         `image/${cropData.format ?? 'jpeg'}`,
-        cropData.quality ?? 1
+        cropData.quality ?? DEFAULT_COMPRESSION_QUALITY
       );
     });
   }
