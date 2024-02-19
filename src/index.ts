@@ -8,7 +8,7 @@
 import { Platform } from 'react-native';
 import NativeRNCImageEditor from './NativeRNCImageEditor';
 import type { Spec } from './NativeRNCImageEditor';
-import type { ImageCropData } from './types.ts';
+import type { ImageCropData, CropResult } from './types.ts';
 
 const LINKING_ERROR =
   `The package '@react-native-community/image-editor' doesn't seem to be linked. Make sure: \n\n` +
@@ -37,7 +37,7 @@ class ImageEditor {
    * will point to the image in the cache path. Remember to delete the
    * cropped image from the cache path when you are done with it.
    */
-  static cropImage(uri: string, cropData: ImageCropData): Promise<string> {
+  static cropImage(uri: string, cropData: ImageCropData): CropResult {
     return RNCImageEditor.cropImage(uri, cropData);
   }
 }

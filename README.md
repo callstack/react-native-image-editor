@@ -39,10 +39,21 @@ Crop the image specified by the URI param. If URI points to a remote image, it w
 If the cropping process is successful, the resultant cropped image will be stored in the cache path, and the URI returned in the promise will point to the image in the cache path. Remember to delete the cropped image from the cache path when you are done with it.
 
 ```ts
-ImageEditor.cropImage(uri, cropData).then((url) => {
-  console.log('Cropped image uri', url);
-  // In case of Web, the `url` is the base64 string
-});
+ImageEditor.cropImage(uri, cropData).then(
+  ({
+    uri, // the path to the image file (example: 'file:///data/user/0/.../image.jpg')
+    path, // the URI of the image (example: '/data/user/0/.../image.jpg')
+    name, // the name of the image file. (example: 'image.jpg')
+    width, // the width of the image in pixels
+    height, // height of the image in pixels
+    size, // the size of the image in bytes
+  }) => {
+    console.log('Cropped image uri:', uri);
+    // WEB has different response:
+    // - `uri`  is the base64 string (example `data:image/jpeg;base64,/4AAQ...AQABAA`)
+    // - `path` is the blob URL      (example `blob:https://example.com/43ff7a16...e46b1`)
+  }
+);
 ```
 
 ### `cropData: ImageCropData`

@@ -9,3 +9,5 @@ export interface ImageCropData
   // ^^^ codegen doesn't support union types yet
   // so to provide more type safety we override the type here
 }
+
+export type CropResult = ReturnType<Spec['cropImage']>;
