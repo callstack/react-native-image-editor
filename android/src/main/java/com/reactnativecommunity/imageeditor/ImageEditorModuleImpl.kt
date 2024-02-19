@@ -23,10 +23,12 @@ import android.util.Base64 as AndroidUtilBase64
 import androidx.exifinterface.media.ExifInterface
 import com.facebook.common.logging.FLog
 import com.facebook.infer.annotation.Assertions
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.ReactConstants
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -162,7 +164,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
                 if (mimeType == MimeType.JPEG) {
                     copyExif(reactContext, Uri.parse(uri), tempFile)
                 }
-                promise.resolve(Uri.fromFile(tempFile).toString())
+                promise.resolve(getResultMap(tempFile, cropped))
             } catch (e: Exception) {
                 promise.reject(e)
             }
@@ -437,6 +439,17 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
             )
 
         // Utils
+        private fun getResultMap(resizedImage: File, image: Bitmap): WritableMap {
+            val response = Arguments.createMap()
+            response.putString("path", resizedImage.absolutePath)
+            response.putString("uri", Uri.fromFile(resizedImage).toString())
+            response.putString("name", resizedImage.name)
+            response.putInt("size", resizedImage.length().toInt())
+            response.putInt("width", image.width)
+            response.putInt("height", image.height)
+            return response
+        }
+
         private fun getMimeType(outOptions: BitmapFactory.Options, format: String?): String {
             val mimeType =
                 when (format) {
