@@ -24,6 +24,7 @@
 #endif
 
 #define DEFAULT_COMPRESSION_QUALITY 0.9
+#define DEFAULT_RESIZE_MODE "cover"
 
 @implementation RNCImageEditor
 
@@ -59,7 +60,7 @@ RCT_EXPORT_MODULE()
     // in pixels
     displaySize = [RCTConvert CGSize:@{ @"width": @(rawDisplaySize.width()), @"height": @(rawDisplaySize.height()) }];
   }
-  RCTResizeMode resizeMode = [RCTConvert RCTResizeMode:data.resizeMode() ?: @"contain"];
+  RCTResizeMode resizeMode = [RCTConvert RCTResizeMode:data.resizeMode() ?: @(DEFAULT_RESIZE_MODE)];
   NSURLRequest *imageRequest = [NSURLRequest requestWithURL:[NSURL URLWithString: uri]];
   CGFloat compressionQuality = DEFAULT_COMPRESSION_QUALITY;
   if (data.quality().has_value()) {
@@ -74,7 +75,7 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
   NSString *format = cropData[@"format"];
   CGSize size = [RCTConvert CGSize:cropData[@"size"]];
   CGPoint offset = [RCTConvert CGPoint:cropData[@"offset"]];
-  RCTResizeMode resizeMode = [RCTConvert RCTResizeMode:cropData[@"resizeMode"] ?: @"contain"];
+  RCTResizeMode resizeMode = [RCTConvert RCTResizeMode:cropData[@"resizeMode"] ?: @(DEFAULT_RESIZE_MODE)];
   CGSize displaySize = CGSizeZero;
   BOOL hasDisplaySizeValue = cropData[@"displaySize"];
   if(hasDisplaySizeValue){
