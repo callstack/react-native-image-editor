@@ -52,12 +52,14 @@ RCT_EXPORT_MODULE()
   CGSize size = [RCTConvert CGSize:@{ @"width": @(data.size().width()), @"height": @(data.size().height()) }];
   CGPoint offset = [RCTConvert CGPoint:@{ @"x": @(data.offset().x()), @"y": @(data.offset().y()) }];
   CGSize targetSize = size;
-  if (data.displaySize().has_value()) {
-    JS::NativeRNCImageEditor::SpecCropImageCropDataDisplaySize displaySize = *data.displaySize(); // Extract the value from the optional
+  CGSize displaySize = CGSizeZero;
+  BOOL hasDisplaySizeValue = data.displaySize().has_value();
+  if (hasDisplaySizeValue) {
+    JS::NativeRNCImageEditor::SpecCropImageCropDataDisplaySize rawDisplaySize = *data.displaySize(); // Extract the value from the optional
     // in pixels
-    targetSize = [RCTConvert CGSize:@{ @"width": @(displaySize.width()), @"height": @(displaySize.height()) }];
+    displaySize = [RCTConvert CGSize:@{ @"width": @(rawDisplaySize.width()), @"height": @(rawDisplaySize.height()) }];
   }
-  NSString *displaySize = data.resizeMode();
+  RCTResizeMode resizeMode = [RCTConvert RCTResizeMode:data.resizeMode() ?: @"contain"];
   NSURLRequest *imageRequest = [NSURLRequest requestWithURL:[NSURL URLWithString: uri]];
   CGFloat compressionQuality = DEFAULT_COMPRESSION_QUALITY;
   if (data.quality().has_value()) {
@@ -72,10 +74,11 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
   NSString *format = cropData[@"format"];
   CGSize size = [RCTConvert CGSize:cropData[@"size"]];
   CGPoint offset = [RCTConvert CGPoint:cropData[@"offset"]];
-  CGSize targetSize = size;
-  NSString *displaySize = cropData[@"resizeMode"];
-  if(displaySize){
-    targetSize = [RCTConvert CGSize:cropData[@"displaySize"]];
+  RCTResizeMode resizeMode = [RCTConvert RCTResizeMode:cropData[@"resizeMode"] ?: @"contain"];
+  CGSize displaySize = CGSizeZero;
+  BOOL hasDisplaySizeValue = cropData[@"displaySize"];
+  if(hasDisplaySizeValue){
+      displaySize = [RCTConvert CGSize:cropData[@"displaySize"]];
   }
   CGFloat compressionQuality = DEFAULT_COMPRESSION_QUALITY;
   if(cropData[@"quality"]){
@@ -101,13 +104,14 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     }
 
     // Crop image
+    CGSize targetSize = rect.size;
     CGRect targetRect = {{-rect.origin.x, -rect.origin.y}, image.size};
     CGAffineTransform transform = RCTTransformFromTargetRect(image.size, targetRect);
     UIImage *croppedImage = RCTTransformImage(image, targetSize, image.scale, transform);
 
     // Scale image
-    if (displaySize) {
-      RCTResizeMode resizeMode = [RCTConvert RCTResizeMode:displaySize ?: @"contain"];
+    if (hasDisplaySizeValue) {
+      targetSize = displaySize;
       targetRect = RCTTargetRect(croppedImage.size, targetSize, 1, resizeMode);
       transform = RCTTransformFromTargetRect(croppedImage.size, targetRect);
       croppedImage = RCTTransformImage(croppedImage, targetSize, image.scale, transform);
