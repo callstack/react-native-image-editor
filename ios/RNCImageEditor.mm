@@ -23,6 +23,8 @@
 #import "RCTImageUtils.h"
 #endif
 
+#define DEFAULT_COMPRESSION_QUALITY 0.9
+
 @implementation RNCImageEditor
 
 RCT_EXPORT_MODULE()
@@ -57,7 +59,7 @@ RCT_EXPORT_MODULE()
   }
   NSString *displaySize = data.resizeMode();
   NSURLRequest *imageRequest = [NSURLRequest requestWithURL:[NSURL URLWithString: uri]];
-  CGFloat compressionQuality = 1;
+  CGFloat compressionQuality = DEFAULT_COMPRESSION_QUALITY;
   if (data.quality().has_value()) {
     compressionQuality = *data.quality();
   }
@@ -75,7 +77,7 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
   if(displaySize){
     targetSize = [RCTConvert CGSize:cropData[@"displaySize"]];
   }
-  CGFloat compressionQuality = 1;
+  CGFloat compressionQuality = DEFAULT_COMPRESSION_QUALITY;
   if(cropData[@"quality"]){
       compressionQuality = [RCTConvert CGFloat:cropData[@"quality"]];
   }
