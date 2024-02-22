@@ -1,5 +1,9 @@
 import type { TurboModule } from 'react-native';
-import type { Double, Float } from 'react-native/Libraries/Types/CodegenTypes';
+import type {
+  Double,
+  Float,
+  Int32,
+} from 'react-native/Libraries/Types/CodegenTypes';
 import { TurboModuleRegistry } from 'react-native';
 
 export interface Spec extends TurboModule {
@@ -46,7 +50,32 @@ export interface Spec extends TurboModule {
        */
       format?: string;
     }
-  ): Promise<string>;
+  ): Promise<{
+    /**
+     *  The path to the image file (example: '/data/user/0/.../image.jpg')
+     */
+    path: string;
+    /**
+     * The URI of the image (example: 'file:///data/user/0/.../image.jpg')
+     */
+    uri: string;
+    /**
+     * The name of the image file. (example: 'image.jpg')
+     */
+    name: string;
+    /**
+     * The width of the image in pixels
+     */
+    width: Int32;
+    /**
+     * The height of the image in pixels
+     */
+    height: Int32;
+    /**
+     * The size of the image in bytes
+     */
+    size: Int32;
+  }>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNCImageEditor');

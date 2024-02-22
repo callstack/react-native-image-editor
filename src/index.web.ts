@@ -1,4 +1,4 @@
-import type { ImageCropData } from './types.ts';
+import type { ImageCropData, CropResult } from './types.ts';
 
 function drawImage(
   img: HTMLImageElement,
@@ -51,16 +51,47 @@ function fetchImage(imgSrc: string): Promise<HTMLImageElement> {
 const DEFAULT_COMPRESSION_QUALITY = 0.9;
 
 class ImageEditor {
-  static cropImage(imgSrc: string, cropData: ImageCropData): Promise<string> {
+  static cropImage(imgSrc: string, cropData: ImageCropData): CropResult {
     /**
      * Returns a promise that resolves with the base64 encoded string of the cropped image
      */
     return fetchImage(imgSrc).then(function onfulfilledImgToCanvas(image) {
+      const ext = cropData.format ?? 'jpeg';
+      const type = `image/${ext}`;
+      const quality = cropData.quality ?? DEFAULT_COMPRESSION_QUALITY;
       const canvas = drawImage(image, cropData);
-      return canvas.toDataURL(
-        `image/${cropData.format ?? 'jpeg'}`,
-        cropData.quality ?? DEFAULT_COMPRESSION_QUALITY
-      );
+
+      return new Promise<Blob | null>(function onfulfilledCanvasToBlob(
+        resolve
+      ) {
+        canvas.toBlob(resolve, type, quality);
+      }).then((blob) => {
+        if (!blob) {
+          throw new Error('Image cannot be created from canvas');
+        }
+
+        let _path: string, _uri: string;
+
+        return {
+          width: canvas.width,
+          height: canvas.height,
+          name: 'ReactNative_cropped_image.' + ext,
+          size: blob.size,
+          // Lazy getters to avoid unnecessary memory usage
+          get path() {
+            if (!_path) {
+              _path = URL.createObjectURL(blob);
+            }
+            return _path;
+          },
+          get uri() {
+            if (!_uri) {
+              _uri = canvas.toDataURL(type, quality);
+            }
+            return _uri;
+          },
+        };
+      });
     });
   }
 }

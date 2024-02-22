@@ -131,12 +131,12 @@ export class SquareImageCropper extends Component<Props, State> {
       if (!this._transformData) {
         return;
       }
-      const croppedImageURI = await ImageEditor.cropImage(
+      const { uri } = await ImageEditor.cropImage(
         this.state.photo.uri,
         this._transformData
       );
-      if (croppedImageURI) {
-        this.setState({ croppedImageURI });
+      if (uri) {
+        this.setState({ croppedImageURI: uri });
       }
     } catch (cropError) {
       if (cropError instanceof Error) {
