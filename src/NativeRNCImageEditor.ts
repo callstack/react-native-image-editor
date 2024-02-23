@@ -49,6 +49,11 @@ export interface Spec extends TurboModule {
        * (Optional) The format of the resulting image. Default auto-detection based on given image
        */
       format?: string;
+
+      /**
+       * (Optional) Indicates if Base64 formatted picture data should also be included in the result.
+       */
+      includeBase64?: boolean;
     }
   ): Promise<{
     /**
@@ -75,6 +80,16 @@ export interface Spec extends TurboModule {
      * The size of the image in bytes
      */
     size: Int32;
+
+    /**
+     * MIME type of the image (example: 'image/jpeg')
+     */
+    type: string;
+
+    /**
+     * The base64 string of the image if the `base64` param is true
+     */
+    base64?: string;
   }>;
 }
 
