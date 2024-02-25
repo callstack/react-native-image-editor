@@ -24,6 +24,9 @@ const RNCImageEditor: Spec = NativeRNCImageEditor
       },
     });
 
+type CropResultWithoutBase64 = Omit<CropResult, 'base64'>;
+type ImageCropDataWithoutBase64 = Omit<ImageCropData, 'includeBase64'>;
+
 class ImageEditor {
   /**
    * Crop the image specified by the URI param. If URI points to a remote
@@ -37,8 +40,23 @@ class ImageEditor {
    * will point to the image in the cache path. Remember to delete the
    * cropped image from the cache path when you are done with it.
    */
-  static cropImage(uri: string, cropData: ImageCropData): CropResult {
-    return RNCImageEditor.cropImage(uri, cropData);
+
+  // TS overload for better `base64` type inference (see: `src/__typetests__/index.ts`)
+  static cropImage(
+    uri: string,
+    cropData: ImageCropDataWithoutBase64
+  ): Promise<CropResultWithoutBase64>;
+  static cropImage(
+    uri: string,
+    cropData: ImageCropDataWithoutBase64 & { includeBase64: false }
+  ): Promise<CropResultWithoutBase64>;
+  static cropImage(
+    uri: string,
+    cropData: ImageCropDataWithoutBase64 & { includeBase64: true }
+  ): Promise<CropResultWithoutBase64 & { base64: string }>;
+
+  static cropImage(uri: string, cropData: ImageCropData): Promise<CropResult> {
+    return RNCImageEditor.cropImage(uri, cropData) as Promise<CropResult>;
   }
 }
 

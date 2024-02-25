@@ -51,7 +51,10 @@ function fetchImage(imgSrc: string): Promise<HTMLImageElement> {
 const DEFAULT_COMPRESSION_QUALITY = 0.9;
 
 class ImageEditor {
-  static cropImage(imgSrc: string, cropData: ImageCropData): CropResult {
+  static cropImage(
+    imgSrc: string,
+    cropData: ImageCropData
+  ): Promise<CropResult> {
     /**
      * Returns a promise that resolves with the base64 encoded string of the cropped image
      */
@@ -72,10 +75,11 @@ class ImageEditor {
 
         let _path: string, _uri: string;
 
-        return {
+        const result: CropResult = {
           width: canvas.width,
           height: canvas.height,
           name: 'ReactNative_cropped_image.' + ext,
+          type: ('image/' + ext) as CropResult['type'],
           size: blob.size,
           // Lazy getters to avoid unnecessary memory usage
           get path() {
@@ -85,12 +89,18 @@ class ImageEditor {
             return _path;
           },
           get uri() {
+            return result.base64 as string;
+          },
+          get base64() {
             if (!_uri) {
               _uri = canvas.toDataURL(type, quality);
             }
-            return _uri;
+            return _uri.split(',')[1];
+            // ^^^ remove `data:image/xxx;base64,` prefix (to align with iOS/Android platform behavior)
           },
         };
+
+        return result;
       });
     });
   }

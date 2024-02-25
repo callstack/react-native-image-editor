@@ -35,6 +35,7 @@ public:
     RCTResizeMode resizeMode;
     CGFloat quality;
     NSString *format;
+    BOOL includeBase64;
 };
 
 @implementation RNCImageEditor
@@ -52,6 +53,7 @@ RCT_EXPORT_MODULE()
                    displayWidth:(id)displayWidth
                   displayHeight:(id)displayHeight
                         quality:(id)quality
+                  includeBase64:(id)includeBase64
 {
     return Params{
         .offset = {[RCTConvert double:offsetX], [RCTConvert double:offsetY]},
@@ -59,7 +61,8 @@ RCT_EXPORT_MODULE()
         .displaySize = {[RCTConvert double:displayWidth], [RCTConvert double:displayHeight]},
         .resizeMode = [RCTConvert RCTResizeMode:resizeMode ?: @(DEFAULT_RESIZE_MODE)],
         .quality = [RCTConvert CGFloat:quality],
-        .format = [RCTConvert NSString:format]
+        .format = [RCTConvert NSString:format],
+        .includeBase64 = [RCTConvert BOOL:includeBase64]
     };
 }
 
@@ -89,7 +92,8 @@ RCT_EXPORT_MODULE()
         resizeMode:data.resizeMode()
         displayWidth:@(data.displaySize().has_value() ? data.displaySize()->width() : DEFAULT_DISPLAY_SIZE)
         displayHeight:@(data.displaySize().has_value() ? data.displaySize()->height() : DEFAULT_DISPLAY_SIZE)
-        quality:@(data.quality().has_value() ? *data.quality() : DEFAULT_COMPRESSION_QUALITY)];
+        quality:@(data.quality().has_value() ? *data.quality() : DEFAULT_COMPRESSION_QUALITY)
+        includeBase64:@(data.includeBase64().has_value() ? *data.includeBase64() : NO)];
 #else
 RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
                   cropData:(NSDictionary *)cropData
@@ -104,7 +108,9 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     resizeMode:cropData[@"resizeMode"]
     displayWidth:cropData[@"displaySize"] ? cropData[@"displaySize"][@"width"] : @(DEFAULT_DISPLAY_SIZE)
     displayHeight:cropData[@"displaySize"] ? cropData[@"displaySize"][@"height"] : @(DEFAULT_DISPLAY_SIZE)
-    quality:cropData[@"quality"] ? cropData[@"quality"] : @(DEFAULT_COMPRESSION_QUALITY)];
+    quality:cropData[@"quality"] ? cropData[@"quality"] : @(DEFAULT_COMPRESSION_QUALITY)
+    includeBase64:cropData[@"includeBase64"]
+  ];
 
 #endif
   NSURL *url = [imageRequest URL];
@@ -139,14 +145,15 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     }
 
     // Store image
+    NSString *type = @"image/jpeg";
     NSString *path = NULL;
     NSData *imageData = NULL;
 
     if([extension isEqualToString:@"png"]){
+      type = @"image/png";
       imageData = UIImagePNGRepresentation(croppedImage);
       path = [RNCFileSystem generatePathInDirectory:[[RNCFileSystem cacheDirectoryPath] stringByAppendingPathComponent:@"ReactNative_cropped_image_"] withExtension:@".png"];
-    }
-    else{
+    } else{
       imageData = UIImageJPEGRepresentation(croppedImage, params.quality);
       path = [RNCFileSystem generatePathInDirectory:[[RNCFileSystem cacheDirectoryPath] stringByAppendingPathComponent:@"ReactNative_cropped_image_"] withExtension:@".jpg"];
     }
@@ -164,14 +171,18 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     NSError *attributesError = nil;
     NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:&attributesError];
     NSNumber *fileSize = fileAttributes == nil ? 0 : [fileAttributes objectForKey:NSFileSize];
-    NSDictionary *response = @{
-       @"path": path,
-       @"uri": uri,
-       @"name": filename,
-       @"size": fileSize ?: @(0),
-       @"width": @(croppedImage.size.width),
-       @"height": @(croppedImage.size.height),
-    };
+
+    NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
+    response[@"path"] = path;
+    response[@"uri"] = uri;
+    response[@"name"] = filename;
+    response[@"type"] = type;
+    response[@"size"] = fileSize ?: @(0);
+    response[@"width"] = @(croppedImage.size.width);
+    response[@"height"] = @(croppedImage.size.height);
+    if (params.includeBase64) {
+      response[@"base64"] = [imageData base64EncodedStringWithOptions:0];
+    }
 
     resolve(response);
   }];

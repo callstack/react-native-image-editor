@@ -10,4 +10,13 @@ export interface ImageCropData
   // so to provide more type safety we override the type here
 }
 
-export type CropResult = ReturnType<Spec['cropImage']>;
+export interface CropResult
+  extends Omit<AsyncReturnType<Spec['cropImage']>, 'type'> {
+  type: 'image/jpeg' | 'image/png' | 'image/webp';
+  // ^^^ codegen doesn't support union types yet
+}
+
+// Utils
+type AsyncReturnType<T> = T extends (...args: any[]) => Promise<infer R>
+  ? R
+  : never;

@@ -19,7 +19,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.text.TextUtils
-import android.util.Base64 as AndroidUtilBase64
+import android.util.Base64
 import androidx.exifinterface.media.ExifInterface
 import com.facebook.common.logging.FLog
 import com.facebook.infer.annotation.Assertions
@@ -32,11 +32,11 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.ReactConstants
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.net.URL
-import java.util.Base64
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -102,6 +102,8 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         val format = if (options.hasKey("format")) options.getString("format") else null
         val offset = if (options.hasKey("offset")) options.getMap("offset") else null
         val size = if (options.hasKey("size")) options.getMap("size") else null
+        val includeBase64 =
+            if (options.hasKey("includeBase64")) options.getBoolean("includeBase64") else false
         val quality =
             if (options.hasKey("quality")) (options.getDouble("quality") * 100).toInt() else 90
         if (
@@ -164,7 +166,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
                 if (mimeType == MimeType.JPEG) {
                     copyExif(reactContext, Uri.parse(uri), tempFile)
                 }
-                promise.resolve(getResultMap(tempFile, cropped))
+                promise.resolve(getResultMap(tempFile, cropped, mimeType, includeBase64))
             } catch (e: Exception) {
                 promise.reject(e)
             }
@@ -319,11 +321,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
     private fun openBitmapInputStream(uri: String): InputStream? {
         return if (uri.startsWith("data:")) {
             val src = uri.substring(uri.indexOf(",") + 1)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                ByteArrayInputStream(Base64.getMimeDecoder().decode(src))
-            } else {
-                ByteArrayInputStream(AndroidUtilBase64.decode(src, AndroidUtilBase64.DEFAULT))
-            }
+            ByteArrayInputStream(Base64.decode(src, Base64.DEFAULT))
         } else if (isLocalUri(uri)) {
             reactContext.contentResolver.openInputStream(Uri.parse(uri))
         } else {
@@ -439,7 +437,12 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
             )
 
         // Utils
-        private fun getResultMap(resizedImage: File, image: Bitmap): WritableMap {
+        private fun getResultMap(
+            resizedImage: File,
+            image: Bitmap,
+            mimeType: String,
+            includeBase64: Boolean
+        ): WritableMap {
             val response = Arguments.createMap()
             response.putString("path", resizedImage.absolutePath)
             response.putString("uri", Uri.fromFile(resizedImage).toString())
@@ -447,7 +450,21 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
             response.putInt("size", resizedImage.length().toInt())
             response.putInt("width", image.width)
             response.putInt("height", image.height)
+            response.putString("type", mimeType)
+
+            if (includeBase64) {
+                response.putString("base64", getBase64String(resizedImage))
+            }
+
             return response
+        }
+
+        private fun getBase64String(file: File): String {
+            val inputStream = FileInputStream(file)
+            val buffer = ByteArray(file.length().toInt())
+            inputStream.read(buffer)
+            inputStream.close()
+            return Base64.encodeToString(buffer, Base64.NO_WRAP)
         }
 
         private fun getMimeType(outOptions: BitmapFactory.Options, format: String?): String {
