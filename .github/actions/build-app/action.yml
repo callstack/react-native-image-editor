@@ -80,11 +80,11 @@ runs:
 
           # Update pods after adding new module
           npx pod-install
-      
+
           # Build iOS App
           xcodebuild -scheme ${{ env.APP_NAME }} -workspace ios/${{ env.APP_NAME }}.xcworkspace -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator'  | xcbeautify --quiet
-        
-          # set output variable          
+
+          # set output variable
           echo "app_path=$(find ~/Library/Developer/Xcode/DerivedData -type d -name "${{ env.APP_NAME }}.app")" >> $GITHUB_OUTPUT
         else
           # Enable new arch for Android
@@ -94,13 +94,13 @@ runs:
 
           # Build Android
           ./android/gradlew assembleRelease --no-daemon -p android -PreactNativeArchitectures=${{ inputs.arch }}
-        
+
           # set output variable
           echo "app_path=$(find $(pwd)/android -type f -name '*.apk')" >> $GITHUB_OUTPUT
         fi
 
     - name: Store Android artifacts on GitHub
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: ${{ inputs.store-artifacts == 'true' }}
       with:
         name: ${{ inputs.platform }}-${{ inputs.rn-ver }}-newArch${{ inputs.new-arch-enabled }}
