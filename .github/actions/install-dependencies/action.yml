@@ -18,7 +18,7 @@ runs:
 
 
     - name: Restore example node_modules from cache
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@v4
       id: restore_example_node_modules
       with:
         key: ${{ runner.os }}-yarn-example-${{ hashFiles('./example/yarn.lock') }}
@@ -41,7 +41,7 @@ runs:
 
     - name: Save example node_modules to cache
       if: steps.restore_example_node_modules.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v3
+      uses: actions/cache/save@v4
       with:
         key: ${{ steps.restore_example_node_modules.outputs.cache-primary-key }}
         path: ${{ github.workspace }}/example/node_modules
@@ -49,7 +49,7 @@ runs:
 
 
     - name: Restore node_modules from cache
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@v4
       id: restore_node_modules
       with:
         key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
@@ -71,7 +71,7 @@ runs:
 
     - name: Save node_modules to cache
       if: steps.restore_node_modules.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v3
+      uses: actions/cache/save@v4
       with:
         key: ${{ steps.restore_node_modules.outputs.cache-primary-key }}
         path: ${{ github.workspace }}/node_modules
