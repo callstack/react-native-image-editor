@@ -1,12 +1,14 @@
-# react-native-image-editor
-
-Image Editor Native module for React Native.
+# @react-native-community/image-editor
 
 [![Build Status][build-badge]][build]
 [![Version][version-badge]][package]
 [![MIT License][license-badge]][license]
 [![PRs Welcome][prs-welcome-badge]][prs-welcome]
 [![Lean Core Badge][lean-core-badge]][lean-core-issue]
+
+Image Editor Native module for React Native.
+
+Originally extracted from React Native [`issue#23313`](https://github.com/facebook/react-native/issues/23313) and maintained by the community.
 
 ## Getting started
 
