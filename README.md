@@ -57,6 +57,7 @@ ImageEditor.cropImage(uri, cropData).then((result) => {
 | `quality`<br>_(optional)_       | `number`                                        | A value in range `0.0` - `1.0` specifying compression level of the result image. `1` means no compression (highest quality) and `0` the highest compression (lowest quality) <br/>**Default value**: `0.9`   |
 | `format`<br>_(optional)_        | `'jpeg' \| 'png' \| 'webp'`                     | The format of the resulting image.<br/> **Default value**: based on the provided image;<br>if value determination is not possible, `'jpeg'` will be used as a fallback.<br/>`'webp'` isn't supported by iOS. |
 | `includeBase64`<br>_(optional)_ | `boolean`                                       | Indicates if Base64 formatted picture data should also be included in the [`CropResult`](#result-cropresult). <br/>**Default value**: `false`                                                                |
+| `headers`<br>_(optional)_       | `object \| Headers`                             | An object or [`Headers`](https://developer.mozilla.org/en-US/docs/Web/API/Headers) interface representing the HTTP headers to send along with the request for a remote image.                                |
 
 ### `result: CropResult`
 

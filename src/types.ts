@@ -3,7 +3,8 @@ import type { Spec } from './NativeRNCImageEditor.ts';
 type ImageCropDataFromSpec = Parameters<Spec['cropImage']>[1];
 
 export interface ImageCropData
-  extends Omit<ImageCropDataFromSpec, 'resizeMode' | 'format'> {
+  extends Omit<ImageCropDataFromSpec, 'headers' | 'resizeMode' | 'format'> {
+  headers?: Record<string, string> | Headers;
   format?: 'png' | 'jpeg' | 'webp';
   resizeMode?: 'contain' | 'cover' | 'stretch' | 'center';
   // ^^^ codegen doesn't support union types yet

@@ -54,6 +54,13 @@ export interface Spec extends TurboModule {
        * (Optional) Indicates if Base64 formatted picture data should also be included in the result.
        */
       includeBase64?: boolean;
+
+      /**
+       * (Optional) An object representing the HTTP headers to send along with the request for a remote image.
+       */
+      headers?: {
+        [key: string]: string;
+      };
     }
   ): Promise<{
     /**

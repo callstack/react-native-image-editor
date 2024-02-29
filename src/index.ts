@@ -27,6 +27,17 @@ const RNCImageEditor: Spec = NativeRNCImageEditor
 type CropResultWithoutBase64 = Omit<CropResult, 'base64'>;
 type ImageCropDataWithoutBase64 = Omit<ImageCropData, 'includeBase64'>;
 
+function toHeadersObject(
+  headers: ImageCropData['headers']
+): Record<string, string> | undefined {
+  return headers instanceof Headers
+    ? Object.fromEntries(
+        // @ts-expect-error: Headers.entries isn't added yet in TS but exists in Runtime
+        headers.entries()
+      )
+    : headers;
+}
+
 class ImageEditor {
   /**
    * Crop the image specified by the URI param. If URI points to a remote
@@ -56,7 +67,10 @@ class ImageEditor {
   ): Promise<CropResultWithoutBase64 & { base64: string }>;
 
   static cropImage(uri: string, cropData: ImageCropData): Promise<CropResult> {
-    return RNCImageEditor.cropImage(uri, cropData) as Promise<CropResult>;
+    return RNCImageEditor.cropImage(uri, {
+      ...cropData,
+      headers: toHeadersObject(cropData.headers),
+    }) as Promise<CropResult>;
   }
 }
 
