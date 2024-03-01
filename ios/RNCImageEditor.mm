@@ -36,6 +36,7 @@ public:
     CGFloat quality;
     NSString *format;
     BOOL includeBase64;
+    NSDictionary *headers;
 };
 
 @implementation RNCImageEditor
@@ -54,6 +55,7 @@ RCT_EXPORT_MODULE()
                   displayHeight:(id)displayHeight
                         quality:(id)quality
                   includeBase64:(id)includeBase64
+                        headers:(id)headers
 {
     return Params{
         .offset = {[RCTConvert double:offsetX], [RCTConvert double:offsetY]},
@@ -62,7 +64,8 @@ RCT_EXPORT_MODULE()
         .resizeMode = [RCTConvert RCTResizeMode:resizeMode ?: @(DEFAULT_RESIZE_MODE)],
         .quality = [RCTConvert CGFloat:quality],
         .format = [RCTConvert NSString:format],
-        .includeBase64 = [RCTConvert BOOL:includeBase64]
+        .includeBase64 = [RCTConvert BOOL:includeBase64],
+        .headers = [RCTConvert NSDictionary:RCTNilIfNull(headers)]
     };
 }
 
@@ -83,7 +86,6 @@ RCT_EXPORT_MODULE()
          resolve:(RCTPromiseResolveBlock)resolve
          reject:(RCTPromiseRejectBlock)reject
 {
-    NSURLRequest *imageRequest = [NSURLRequest requestWithURL:[NSURL URLWithString: uri]];
     auto params = [self adaptParamsWithFormat:data.format()
         width:@(data.size().width())
         height:@(data.size().height())
@@ -93,9 +95,10 @@ RCT_EXPORT_MODULE()
         displayWidth:@(data.displaySize().has_value() ? data.displaySize()->width() : DEFAULT_DISPLAY_SIZE)
         displayHeight:@(data.displaySize().has_value() ? data.displaySize()->height() : DEFAULT_DISPLAY_SIZE)
         quality:@(data.quality().has_value() ? *data.quality() : DEFAULT_COMPRESSION_QUALITY)
-        includeBase64:@(data.includeBase64().has_value() ? *data.includeBase64() : NO)];
+        includeBase64:@(data.includeBase64().has_value() ? *data.includeBase64() : NO)
+        headers: data.headers()];
 #else
-RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
+RCT_EXPORT_METHOD(cropImage:(NSString *)uri
                   cropData:(NSDictionary *)cropData
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
@@ -110,9 +113,16 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     displayHeight:cropData[@"displaySize"] ? cropData[@"displaySize"][@"height"] : @(DEFAULT_DISPLAY_SIZE)
     quality:cropData[@"quality"] ? cropData[@"quality"] : @(DEFAULT_COMPRESSION_QUALITY)
     includeBase64:cropData[@"includeBase64"]
-  ];
+    headers:cropData[@"headers"]];
 
 #endif
+  NSMutableURLRequest *imageRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString: uri]];
+  [params.headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
+    if (value) {
+      [imageRequest addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
+    }
+  }];
+
   NSURL *url = [imageRequest URL];
   NSString *urlPath = [url path];
   NSString *extension = [urlPath pathExtension];

@@ -28,6 +28,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.ReactConstants
 import java.io.ByteArrayInputStream
@@ -99,6 +100,10 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
      *   is passed to this is the file:// URI of the new image
      */
     fun cropImage(uri: String?, options: ReadableMap, promise: Promise) {
+        val headers =
+            if (options.hasKey("headers") && options.getType("headers") == ReadableType.Map)
+                options.getMap("headers")?.toHashMap()
+            else null
         val format = if (options.hasKey("format")) options.getString("format") else null
         val offset = if (options.hasKey("offset")) options.getMap("offset") else null
         val size = if (options.hasKey("size")) options.getMap("size") else null
@@ -152,10 +157,11 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
                             width,
                             height,
                             targetWidth,
-                            targetHeight
+                            targetHeight,
+                            headers
                         )
                     } else {
-                        cropTask(outOptions, uri, x, y, width, height)
+                        cropTask(outOptions, uri, x, y, width, height, headers)
                     }
                 if (cropped == null) {
                     throw IOException("Cannot decode bitmap: $uri")
@@ -189,9 +195,10 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         x: Int,
         y: Int,
         width: Int,
-        height: Int
+        height: Int,
+        headers: HashMap<String, Any?>?
     ): Bitmap? {
-        return openBitmapInputStream(uri)?.use {
+        return openBitmapInputStream(uri, headers)?.use {
             // Efficiently crops image without loading full resolution into memory
             // https://developer.android.com/reference/android/graphics/BitmapRegionDecoder.html
             val decoder =
@@ -251,6 +258,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         rectHeight: Int,
         outputWidth: Int,
         outputHeight: Int,
+        headers: HashMap<String, Any?>?
     ): Bitmap? {
         Assertions.assertNotNull(outOptions)
 
@@ -262,7 +270,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         // Where would the crop rect end up within the scaled bitmap?
 
         val bitmap =
-            openBitmapInputStream(uri)?.use {
+            openBitmapInputStream(uri, headers)?.use {
                 // This can use significantly less memory than decoding the full-resolution bitmap
                 BitmapFactory.decodeStream(it, null, outOptions)
             } ?: return null
@@ -318,7 +326,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         return Bitmap.createBitmap(bitmap, cropX, cropY, cropWidth, cropHeight, scaleMatrix, filter)
     }
 
-    private fun openBitmapInputStream(uri: String): InputStream? {
+    private fun openBitmapInputStream(uri: String, headers: HashMap<String, Any?>?): InputStream? {
         return if (uri.startsWith("data:")) {
             val src = uri.substring(uri.indexOf(",") + 1)
             ByteArrayInputStream(Base64.decode(src, Base64.DEFAULT))
@@ -326,6 +334,11 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
             reactContext.contentResolver.openInputStream(Uri.parse(uri))
         } else {
             val connection = URL(uri).openConnection()
+            headers?.forEach { (key, value) ->
+                if (value is String) {
+                    connection.setRequestProperty(key, value)
+                }
+            }
             connection.getInputStream()
         }
     }
