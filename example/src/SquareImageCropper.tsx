@@ -8,6 +8,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import ImageEditor from '@react-native-community/image-editor';
+import Slider from '@react-native-community/slider';
 
 import type { LayoutChangeEvent } from 'react-native';
 import { DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT } from './constants';
@@ -19,6 +20,7 @@ interface State {
   croppedImageURI: string | null;
   cropError: Error | null;
   measuredSize: ImageSize | null;
+  cropScale: number;
 }
 interface Props {
   // noop
@@ -41,6 +43,7 @@ export class SquareImageCropper extends Component<Props, State> {
       measuredSize: null,
       croppedImageURI: null,
       cropError: null,
+      cropScale: 1,
     };
   }
 
@@ -89,6 +92,17 @@ export class SquareImageCropper extends Component<Props, State> {
           style={[styles.imageCropper, measuredSize]}
           onTransformDataChange={this._onTransformDataChange}
         />
+        <View style={styles.scaleSliderContainer}>
+          <Text>Scale {this.state.cropScale.toFixed(2)}</Text>
+          <Slider
+            style={styles.scaleSlider}
+            minimumValue={0}
+            maximumValue={1}
+            onValueChange={(cropScale) => this.setState({ cropScale })}
+            value={this.state.cropScale}
+          />
+        </View>
+
         <TouchableHighlight
           accessibilityRole="button"
           style={styles.cropButtonTouchable}
@@ -131,9 +145,20 @@ export class SquareImageCropper extends Component<Props, State> {
       if (!this._transformData) {
         return;
       }
+      const displaySize =
+        this.state.cropScale !== 1
+          ? {
+              width: this._transformData?.size.width * this.state.cropScale,
+              height: this._transformData?.size.height * this.state.cropScale,
+            }
+          : undefined;
+      const cropData: ImageCropData = {
+        ...this._transformData,
+        displaySize,
+      };
       const { uri } = await ImageEditor.cropImage(
         this.state.photo.uri,
-        this._transformData
+        cropData
       );
       if (uri) {
         this.setState({ croppedImageURI: uri });
@@ -146,7 +171,7 @@ export class SquareImageCropper extends Component<Props, State> {
   };
 
   _reset = () => {
-    this.setState({ croppedImageURI: null, cropError: null });
+    this.setState({ croppedImageURI: null, cropError: null, cropScale: 1 });
   };
 }
 
@@ -185,5 +210,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     marginBottom: 10,
+  },
+  scaleSlider: {
+    width: '100%',
+  },
+  scaleSliderContainer: {
+    width: '80%',
+    alignSelf: 'center',
+    alignItems: 'center',
   },
 });
