@@ -206,10 +206,10 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
                     BitmapRegionDecoder.newInstance(it)
                 } else {
                     @Suppress("DEPRECATION") BitmapRegionDecoder.newInstance(it, false)
-                }
+                } ?: throw Error("Could not create bitmap decoder. Uri: $uri")
 
-            val imageHeight: Int = decoder!!.height
-            val imageWidth: Int = decoder!!.width
+            val imageHeight: Int = decoder.height
+            val imageWidth: Int = decoder.width
             val orientation = getOrientation(reactContext, Uri.parse(uri))
 
             val (left, top) =
@@ -229,9 +229,9 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
 
             return@use try {
                 val rect = Rect(left, top, right, bottom)
-                decoder!!.decodeRegion(rect, outOptions)
+                decoder.decodeRegion(rect, outOptions)
             } finally {
-                decoder!!.recycle()
+                decoder.recycle()
             }
         }
     }
@@ -262,25 +262,22 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
     ): Bitmap? {
         Assertions.assertNotNull(outOptions)
 
-        // Loading large bitmaps efficiently:
-        // http://developer.android.com/training/displaying-bitmaps/load-bitmap.html
-
-        // This uses scaling mode COVER
-
-        // Where would the crop rect end up within the scaled bitmap?
-
-        val bitmap =
-            openBitmapInputStream(uri, headers)?.use {
-                // This can use significantly less memory than decoding the full-resolution bitmap
-                BitmapFactory.decodeStream(it, null, outOptions)
-            } ?: return null
+      return openBitmapInputStream(uri, headers)?.use {
+        // Efficiently crops image without loading full resolution into memory
+        // https://developer.android.com/reference/android/graphics/BitmapRegionDecoder.html
+        val decoder =
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            BitmapRegionDecoder.newInstance(it)
+          } else {
+            @Suppress("DEPRECATION") BitmapRegionDecoder.newInstance(it, false)
+          } ?: throw Error("Could not create bitmap decoder. Uri: $uri")
 
         val orientation = getOrientation(reactContext, Uri.parse(uri))
         val (x, y) =
             when (orientation) {
-                90 -> yPos to bitmap.height - rectWidth - xPos
-                270 -> bitmap.width - rectHeight - yPos to xPos
-                180 -> bitmap.width - rectWidth - xPos to bitmap.height - rectHeight - yPos
+                90 -> yPos to decoder.height - rectWidth - xPos
+                270 -> decoder.width - rectHeight - yPos to xPos
+                180 -> decoder.width - rectWidth - xPos to decoder.height - rectHeight - yPos
                 else -> xPos to yPos
             }
 
@@ -323,7 +320,11 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         val scaleMatrix = Matrix().apply { setScale(cropScale, cropScale) }
         val filter = true
 
+        val rect = Rect(0, 0, decoder.width, decoder.height)
+        val bitmap =decoder.decodeRegion(rect, outOptions)
+        
         return Bitmap.createBitmap(bitmap, cropX, cropY, cropWidth, cropHeight, scaleMatrix, filter)
+      }
     }
 
     private fun openBitmapInputStream(uri: String, headers: HashMap<String, Any?>?): InputStream? {

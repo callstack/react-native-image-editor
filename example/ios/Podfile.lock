@@ -824,6 +824,22 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-slider (4.5.0):
+    - RCT-Folly (= 2021.07.22.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-graphics
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - React-NativeModulesApple (0.72.6):
     - React-callinvoker
     - React-Core
@@ -985,6 +1001,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - "react-native-image-editor (from `../node_modules/@react-native-community/image-editor`)"
+  - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -1060,6 +1077,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-image-editor:
     :path: "../node_modules/@react-native-community/image-editor"
+  react-native-slider:
+    :path: "../node_modules/@react-native-community/slider"
   React-NativeModulesApple:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-perflogger:
@@ -1130,11 +1149,12 @@ SPEC CHECKSUMS:
   React-jsinspector: 194e32c6aab382d88713ad3dd0025c5f5c4ee072
   React-logger: cebf22b6cf43434e471dc561e5911b40ac01d289
   react-native-image-editor: 6491eca6c084de724a9a144056323cb00848b68c
+  react-native-slider: 69ccddffd41798b325247b9c4c09a0927e3b7cec
   React-NativeModulesApple: 63505fb94b71e2469cab35bdaf36cca813cb5bfd
   React-perflogger: e3596db7e753f51766bceadc061936ef1472edc3
   React-RCTActionSheet: 17ab132c748b4471012abbcdcf5befe860660485
   React-RCTAnimation: c8bbaab62be5817d2a31c36d5f2571e3f7dcf099
-  React-RCTAppDelegate: 100a4f479c664e4f63d4cfd3ff8acbd3915e31e7
+  React-RCTAppDelegate: 16245b0c3a216dd600db53209812f8d470643a57
   React-RCTBlob: 86ab788db3fcc1af0d186a6625e7d0956ffeea5b
   React-RCTFabric: 87e15f0ad21f7bf2642d4e78afaf162d349eb221
   React-RCTImage: 670a3486b532292649b1aef3ffddd0b495a5cee4
@@ -1156,4 +1176,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: c464aabec59351f1e87d676c093bc6f524e21681
 
-COCOAPODS: 1.13.0
+COCOAPODS: 1.14.3
