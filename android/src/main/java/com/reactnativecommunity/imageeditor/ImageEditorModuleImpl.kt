@@ -262,69 +262,79 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
     ): Bitmap? {
         Assertions.assertNotNull(outOptions)
 
-      return openBitmapInputStream(uri, headers)?.use {
-        // Efficiently crops image without loading full resolution into memory
-        // https://developer.android.com/reference/android/graphics/BitmapRegionDecoder.html
-        val decoder =
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            BitmapRegionDecoder.newInstance(it)
-          } else {
-            @Suppress("DEPRECATION") BitmapRegionDecoder.newInstance(it, false)
-          } ?: throw Error("Could not create bitmap decoder. Uri: $uri")
+        return openBitmapInputStream(uri, headers)?.use {
+            // Efficiently crops image without loading full resolution into memory
+            // https://developer.android.com/reference/android/graphics/BitmapRegionDecoder.html
+            val decoder =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    BitmapRegionDecoder.newInstance(it)
+                } else {
+                    @Suppress("DEPRECATION") BitmapRegionDecoder.newInstance(it, false)
+                } ?: throw Error("Could not create bitmap decoder. Uri: $uri")
 
-        val orientation = getOrientation(reactContext, Uri.parse(uri))
-        val (x, y) =
-            when (orientation) {
-                90 -> yPos to decoder.height - rectWidth - xPos
-                270 -> decoder.width - rectHeight - yPos to xPos
-                180 -> decoder.width - rectWidth - xPos to decoder.height - rectHeight - yPos
-                else -> xPos to yPos
-            }
+            val orientation = getOrientation(reactContext, Uri.parse(uri))
+            val (x, y) =
+                when (orientation) {
+                    90 -> yPos to decoder.height - rectWidth - xPos
+                    270 -> decoder.width - rectHeight - yPos to xPos
+                    180 -> decoder.width - rectWidth - xPos to decoder.height - rectHeight - yPos
+                    else -> xPos to yPos
+                }
 
-        val (width, height) =
-            when (orientation) {
-                90,
-                270 -> rectHeight to rectWidth
-                else -> rectWidth to rectHeight
-            }
-        val (targetWidth, targetHeight) =
-            when (orientation) {
-                90,
-                270 -> outputHeight to outputWidth
-                else -> outputWidth to outputHeight
-            }
+            val (width, height) =
+                when (orientation) {
+                    90,
+                    270 -> rectHeight to rectWidth
+                    else -> rectWidth to rectHeight
+                }
+            val (targetWidth, targetHeight) =
+                when (orientation) {
+                    90,
+                    270 -> outputHeight to outputWidth
+                    else -> outputWidth to outputHeight
+                }
 
-        val cropRectRatio = width / height.toFloat()
-        val targetRatio = targetWidth / targetHeight.toFloat()
-        val isCropRatioLargerThanTargetRatio = cropRectRatio > targetRatio
-        val newWidth =
-            if (isCropRatioLargerThanTargetRatio) height * targetRatio else width.toFloat()
-        val newHeight =
-            if (isCropRatioLargerThanTargetRatio) height.toFloat() else width / targetRatio
-        val newX = if (isCropRatioLargerThanTargetRatio) x + (width - newWidth) / 2 else x.toFloat()
-        val newY =
-            if (isCropRatioLargerThanTargetRatio) y.toFloat() else y + (height - newHeight) / 2
-        val scale =
-            if (isCropRatioLargerThanTargetRatio) targetHeight / height.toFloat()
-            else targetWidth / width.toFloat()
+            val cropRectRatio = width / height.toFloat()
+            val targetRatio = targetWidth / targetHeight.toFloat()
+            val isCropRatioLargerThanTargetRatio = cropRectRatio > targetRatio
+            val newWidth =
+                if (isCropRatioLargerThanTargetRatio) height * targetRatio else width.toFloat()
+            val newHeight =
+                if (isCropRatioLargerThanTargetRatio) height.toFloat() else width / targetRatio
+            val newX =
+                if (isCropRatioLargerThanTargetRatio) x + (width - newWidth) / 2 else x.toFloat()
+            val newY =
+                if (isCropRatioLargerThanTargetRatio) y.toFloat() else y + (height - newHeight) / 2
+            val scale =
+                if (isCropRatioLargerThanTargetRatio) targetHeight / height.toFloat()
+                else targetWidth / width.toFloat()
 
-        // Decode the bitmap. We have to open the stream again, like in the example linked above.
-        // Is there a way to just continue reading from the stream?
-        outOptions.inSampleSize = getDecodeSampleSize(width, height, targetWidth, targetHeight)
+            // Decode the bitmap. We have to open the stream again, like in the example linked
+            // above.
+            // Is there a way to just continue reading from the stream?
+            outOptions.inSampleSize = getDecodeSampleSize(width, height, targetWidth, targetHeight)
 
-        val cropX = (newX / outOptions.inSampleSize.toFloat()).roundToInt()
-        val cropY = (newY / outOptions.inSampleSize.toFloat()).roundToInt()
-        val cropWidth = (newWidth / outOptions.inSampleSize.toFloat()).roundToInt()
-        val cropHeight = (newHeight / outOptions.inSampleSize.toFloat()).roundToInt()
-        val cropScale = scale * outOptions.inSampleSize
-        val scaleMatrix = Matrix().apply { setScale(cropScale, cropScale) }
-        val filter = true
+            val cropX = (newX / outOptions.inSampleSize.toFloat()).roundToInt()
+            val cropY = (newY / outOptions.inSampleSize.toFloat()).roundToInt()
+            val cropWidth = (newWidth / outOptions.inSampleSize.toFloat()).roundToInt()
+            val cropHeight = (newHeight / outOptions.inSampleSize.toFloat()).roundToInt()
+            val cropScale = scale * outOptions.inSampleSize
+            val scaleMatrix = Matrix().apply { setScale(cropScale, cropScale) }
+            val filter = true
 
-        val rect = Rect(0, 0, decoder.width, decoder.height)
-        val bitmap =decoder.decodeRegion(rect, outOptions)
-        
-        return Bitmap.createBitmap(bitmap, cropX, cropY, cropWidth, cropHeight, scaleMatrix, filter)
-      }
+            val rect = Rect(0, 0, decoder.width, decoder.height)
+            val bitmap = decoder.decodeRegion(rect, outOptions)
+
+            return Bitmap.createBitmap(
+                bitmap,
+                cropX,
+                cropY,
+                cropWidth,
+                cropHeight,
+                scaleMatrix,
+                filter
+            )
+        }
     }
 
     private fun openBitmapInputStream(uri: String, headers: HashMap<String, Any?>?): InputStream? {
