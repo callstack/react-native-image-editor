@@ -21,7 +21,15 @@ import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Base64
 import androidx.exifinterface.media.ExifInterface
+import com.facebook.common.executors.CallerThreadExecutor
 import com.facebook.common.logging.FLog
+import com.facebook.datasource.BaseDataSubscriber
+import com.facebook.datasource.DataSource
+import com.facebook.datasource.DataSubscriber
+import com.facebook.drawee.backends.pipeline.Fresco.getImagePipeline
+import com.facebook.imagepipeline.common.Priority
+import com.facebook.imagepipeline.request.ImageRequest
+import com.facebook.imagepipeline.request.ImageRequestBuilder
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
@@ -31,6 +39,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.modules.fresco.ReactNetworkImageRequest
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileInputStream
@@ -461,6 +470,42 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
             )
 
         // Utils
+        private fun prefetchImage(uri: String, headers: ReadableMap) {
+            val uri = Uri.parse(uri)
+            val imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(uri)
+            val request: ImageRequest =
+                ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers)
+
+            val prefetchSource: DataSource<Void> =
+                getImagePipeline().prefetchToDiskCache(request, null, Priority.HIGH)
+            val prefetchSubscriber: DataSubscriber<Void> =
+                object : BaseDataSubscriber<Void>() {
+                    override fun onNewResultImpl(dataSource: DataSource<Void>) {
+                        if (!dataSource.isFinished()) {
+                            return
+                        }
+                        try {
+                            val ref =
+                                getImagePipeline()
+                                    .getCachedImage(getImagePipeline().getCacheKey(request, null))
+                            val image = ref!!.get()
+                            // ???
+                        } catch (e: java.lang.Exception) {} finally {
+                            dataSource.close()
+                        }
+                    }
+
+                    override fun onFailureImpl(dataSource: DataSource<Void?>) {
+                        try {
+                            // Error
+                        } finally {
+                            dataSource.close()
+                        }
+                    }
+                }
+            prefetchSource.subscribe(prefetchSubscriber, CallerThreadExecutor.getInstance())
+        }
+
         private fun getResultMap(
             resizedImage: File,
             image: Bitmap,
