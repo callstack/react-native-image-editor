@@ -71,7 +71,7 @@ jobs:
           arch: arm64-v8a
           new-arch-enabled: ${{ matrix.new_arch_enabled }}
           rn-ver: ${{ matrix.rn_ver }}
-          module-to-install: file:${{ github.workspace }}
+          module-to-install: ${{ github.workspace }}
           store-artifacts: true
           platform: android
 
@@ -93,6 +93,6 @@ jobs:
         with:
           new-arch-enabled: ${{ matrix.new_arch_enabled }}
           rn-ver: ${{ matrix.rn_ver }}
-          module-to-install: file:${{ github.workspace }}
+          module-to-install: ${{ github.workspace }}
           store-artifacts: true
           platform: ios
