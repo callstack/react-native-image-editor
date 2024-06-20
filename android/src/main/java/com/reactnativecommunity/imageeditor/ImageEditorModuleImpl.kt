@@ -22,6 +22,15 @@ import android.text.TextUtils
 import android.util.Base64
 import androidx.exifinterface.media.ExifInterface
 import com.facebook.common.logging.FLog
+import com.facebook.common.memory.PooledByteBuffer
+import com.facebook.common.memory.PooledByteBufferInputStream
+import com.facebook.common.references.CloseableReference
+import com.facebook.datasource.DataSource
+import com.facebook.datasource.DataSources
+import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.imagepipeline.core.ImagePipeline
+import com.facebook.imagepipeline.request.ImageRequest
+import com.facebook.imagepipeline.request.ImageRequestBuilder
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
@@ -31,6 +40,9 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.modules.fresco.ReactNetworkImageRequest
+import com.facebook.react.views.image.ReactCallerContextFactory
+import com.facebook.react.views.imagehelper.ImageSource
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileInputStream
@@ -51,7 +63,13 @@ object MimeType {
     const val WEBP = "image/webp"
 }
 
-class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
+class ImageEditorModuleImpl(
+    private val reactContext: ReactApplicationContext,
+    private val callerContext: Any?,
+    private val callerContextFactory: ReactCallerContextFactory?,
+    private val imagePipeline: ImagePipeline?
+) {
+
     private val moduleCoroutineScope = CoroutineScope(Dispatchers.Default)
 
     init {
@@ -63,6 +81,56 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
             moduleCoroutineScope.cancel()
         }
         cleanTask()
+    }
+
+    private fun getCallerContext(): Any? {
+        return callerContextFactory?.getOrCreateCallerContext("", "") ?: callerContext
+    }
+
+    private fun getImagePipeline(): ImagePipeline {
+        return imagePipeline ?: Fresco.getImagePipeline()
+    }
+
+    private fun fetchAndCacheImage(
+        uri: String,
+        headers: ReadableMap?,
+    ): InputStream? {
+        try {
+            val source = ImageSource(reactContext, uri)
+            val imageRequest: ImageRequest =
+                if (headers != null) {
+                    val imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(source.uri)
+                    ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers)
+                } else ImageRequestBuilder.newBuilderWithSource(source.uri).build()
+
+            val dataSource: DataSource<CloseableReference<PooledByteBuffer>> =
+                getImagePipeline().fetchEncodedImage(imageRequest, getCallerContext())
+
+            try {
+                val ref: CloseableReference<PooledByteBuffer>? =
+                    DataSources.waitForFinalResult(dataSource)
+                if (ref != null) {
+                    try {
+                        val result = ref.get()
+                        return PooledByteBufferInputStream(result)
+                    } finally {
+                        CloseableReference.closeSafely(ref)
+                    }
+                }
+                return null
+            } finally {
+                dataSource.close()
+            }
+        } catch (e: Exception) {
+            // Fallback to default network requests
+            val connection = URL(uri).openConnection()
+            headers?.toHashMap()?.forEach { (key, value) ->
+                if (value is kotlin.String) {
+                    connection.setRequestProperty(key, value)
+                }
+            }
+            return connection.getInputStream()
+        }
     }
 
     /**
@@ -102,7 +170,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
     fun cropImage(uri: String?, options: ReadableMap, promise: Promise) {
         val headers =
             if (options.hasKey("headers") && options.getType("headers") == ReadableType.Map)
-                options.getMap("headers")?.toHashMap()
+                options.getMap("headers")
             else null
         val format = if (options.hasKey("format")) options.getString("format") else null
         val offset = if (options.hasKey("offset")) options.getMap("offset") else null
@@ -148,7 +216,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
                 // memory
                 val hasTargetSize = targetWidth > 0 && targetHeight > 0
                 val cropped: Bitmap? =
-                    if (hasTargetSize) {
+                    if (hasTargetSize)
                         cropAndResizeTask(
                             outOptions,
                             uri,
@@ -160,9 +228,8 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
                             targetHeight,
                             headers
                         )
-                    } else {
-                        cropTask(outOptions, uri, x, y, width, height, headers)
-                    }
+                    else cropTask(outOptions, uri, x, y, width, height, headers)
+
                 if (cropped == null) {
                     throw IOException("Cannot decode bitmap: $uri")
                 }
@@ -196,7 +263,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         y: Int,
         width: Int,
         height: Int,
-        headers: HashMap<String, Any?>?
+        headers: ReadableMap?
     ): Bitmap? {
         return openBitmapInputStream(uri, headers)?.use {
             // Efficiently crops image without loading full resolution into memory
@@ -258,7 +325,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         rectHeight: Int,
         outputWidth: Int,
         outputHeight: Int,
-        headers: HashMap<String, Any?>?
+        headers: ReadableMap?
     ): Bitmap? {
         Assertions.assertNotNull(outOptions)
 
@@ -337,20 +404,14 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         }
     }
 
-    private fun openBitmapInputStream(uri: String, headers: HashMap<String, Any?>?): InputStream? {
+    private fun openBitmapInputStream(uri: String, headers: ReadableMap?): InputStream? {
         return if (uri.startsWith("data:")) {
             val src = uri.substring(uri.indexOf(",") + 1)
             ByteArrayInputStream(Base64.decode(src, Base64.DEFAULT))
         } else if (isLocalUri(uri)) {
             reactContext.contentResolver.openInputStream(Uri.parse(uri))
         } else {
-            val connection = URL(uri).openConnection()
-            headers?.forEach { (key, value) ->
-                if (value is String) {
-                    connection.setRequestProperty(key, value)
-                }
-            }
-            connection.getInputStream()
+            fetchAndCacheImage(uri, headers)
         }
     }
 
