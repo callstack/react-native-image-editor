@@ -1,6 +1,6 @@
 {
   "name": "@react-native-community/image-editor",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "description": "React Native Image Editing native modules for iOS & Android",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
