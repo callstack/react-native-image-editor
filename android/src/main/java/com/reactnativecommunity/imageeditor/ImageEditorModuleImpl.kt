@@ -196,7 +196,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         y: Int,
         width: Int,
         height: Int,
-        headers: HashMap<String, Any?>?
+        headers: HashMap<String, Any>?
     ): Bitmap? {
         return openBitmapInputStream(uri, headers)?.use {
             // Efficiently crops image without loading full resolution into memory
@@ -258,7 +258,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         rectHeight: Int,
         outputWidth: Int,
         outputHeight: Int,
-        headers: HashMap<String, Any?>?
+        headers: HashMap<String, Any>?
     ): Bitmap? {
         Assertions.assertNotNull(outOptions)
 
@@ -337,7 +337,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         }
     }
 
-    private fun openBitmapInputStream(uri: String, headers: HashMap<String, Any?>?): InputStream? {
+    private fun openBitmapInputStream(uri: String, headers: HashMap<String, Any>?): InputStream? {
         return if (uri.startsWith("data:")) {
             val src = uri.substring(uri.indexOf(",") + 1)
             ByteArrayInputStream(Base64.decode(src, Base64.DEFAULT))
