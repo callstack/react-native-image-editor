@@ -1,16 +1,12 @@
-import callstackConfigReact from '@callstack/eslint-config/react.flat.js';
+const callstackConfigReact = require('@callstack/eslint-config/react.flat.js');
 
-export default [
+module.exports = [
   {
     ignores: ['node_modules/', 'lib/'],
   },
   ...callstackConfigReact,
   {
-    files: [
-      'eslint.config.js',
-      'example/**/*.{js,ts,tsx}',
-      'example/*.{js,ts,tsx}',
-    ],
+    files: ['eslint.config.js', 'example/**/*.{js,ts,tsx}'],
     rules: {
       'import/no-extraneous-dependencies': 'off',
       'import/no-unresolved': 'off',
