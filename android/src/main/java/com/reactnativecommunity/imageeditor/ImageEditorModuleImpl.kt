@@ -88,6 +88,15 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
     }
 
     /**
+     * React Native
+     * - 0.77.x: toHashMap(): HashMap<String, Any?>?
+     * - 0.76.x: toHashMap(): HashMap<String, Any>?
+     */
+    fun <V> safeConvert(map: HashMap<String, V>?): HashMap<String, Any>? {
+        return map?.filterValues { it != null } as? HashMap<String, Any>
+    }
+
+    /**
      * Crop an image. If all goes well, the promise will be resolved with the file:// URI of the new
      * image as the only argument. This is a temporary file - consider using
      * CameraRollManager.saveImageWithTag to save it in the gallery.
@@ -102,7 +111,7 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
     fun cropImage(uri: String?, options: ReadableMap, promise: Promise) {
         val headers =
             if (options.hasKey("headers") && options.getType("headers") == ReadableType.Map)
-                options.getMap("headers")?.toHashMap()
+                safeConvert(options.getMap("headers")?.toHashMap())
             else null
         val format = if (options.hasKey("format")) options.getString("format") else null
         val offset = if (options.hasKey("offset")) options.getMap("offset") else null

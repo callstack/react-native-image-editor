@@ -6,6 +6,7 @@ import {
   TouchableHighlight,
   View,
   SafeAreaView,
+  ImageURISource,
 } from 'react-native';
 import ImageEditor from '@react-native-community/image-editor';
 import Slider from '@react-native-community/slider';
@@ -17,31 +18,29 @@ import { ImageCropper } from './ImageCropper';
 import type { ImageCropData, ImageSize } from './types';
 
 interface State {
-  croppedImageURI: string | null;
+  croppedImageURI: string | undefined;
   cropError: Error | null;
   measuredSize: ImageSize | null;
   cropScale: number;
+  photo: ImageSize & Pick<ImageURISource, 'uri'>;
 }
 interface Props {
   // noop
 }
 
 export class SquareImageCropper extends Component<Props, State> {
-  state: any;
-  _isMounted: boolean;
   _transformData: ImageCropData | undefined;
 
   constructor(props: Props) {
     super(props);
-    this._isMounted = true;
     this.state = {
       photo: {
-        uri: `https://source.unsplash.com/2Ts5HnA67k8/${DEFAULT_IMAGE_WIDTH}x${DEFAULT_IMAGE_HEIGHT}`,
+        uri: `https://picsum.photos/seed/picsum/${DEFAULT_IMAGE_WIDTH}/${DEFAULT_IMAGE_HEIGHT}`,
         height: DEFAULT_IMAGE_HEIGHT,
         width: DEFAULT_IMAGE_WIDTH,
       },
       measuredSize: null,
-      croppedImageURI: null,
+      croppedImageURI: undefined,
       cropError: null,
       cropScale: 1,
     };
@@ -77,7 +76,7 @@ export class SquareImageCropper extends Component<Props, State> {
   _renderImageCropper() {
     const { photo, cropError, measuredSize } = this.state;
 
-    if (!photo) {
+    if (!photo || !measuredSize) {
       return <SafeAreaView style={styles.container} />;
     }
 
@@ -93,7 +92,9 @@ export class SquareImageCropper extends Component<Props, State> {
           onTransformDataChange={this._onTransformDataChange}
         />
         <View style={styles.scaleSliderContainer}>
-          <Text>Scale {this.state.cropScale.toFixed(2)}</Text>
+          <Text style={styles.text}>
+            Scale {this.state.cropScale.toFixed(2)}
+          </Text>
           <Slider
             style={styles.scaleSlider}
             minimumValue={0}
@@ -157,7 +158,7 @@ export class SquareImageCropper extends Component<Props, State> {
         displaySize,
       };
       const { uri } = await ImageEditor.cropImage(
-        this.state.photo.uri,
+        this.state.photo.uri as string,
         cropData
       );
       if (uri) {
@@ -171,7 +172,11 @@ export class SquareImageCropper extends Component<Props, State> {
   };
 
   _reset = () => {
-    this.setState({ croppedImageURI: null, cropError: null, cropScale: 1 });
+    this.setState({
+      croppedImageURI: undefined,
+      cropError: null,
+      cropScale: 1,
+    });
   };
 }
 
