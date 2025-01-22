@@ -65,17 +65,23 @@ runs:
       run: |
         set -x # print all executed commands
 
+        export YARN_ENABLE_IMMUTABLE_INSTALLS=false
+
         # Create new tmp React Native project
-        npx react-native@${{ inputs.rn-ver }} init ${{ env.APP_NAME }} --version ${{ inputs.rn-ver }} --skip-git-init --install-pods false
+        npx @react-native-community/cli init ${{ env.APP_NAME }} --version ${{ inputs.rn-ver }} --skip-git-init --install-pods false --pm yarn
         cd ${{ env.APP_NAME }}
 
-        # Install my module
-        # Yarn1 syntax: yarn add ${{ inputs.module-to-install }}
-        # Yarn Berry (2+) syntax:
-        yarn add @react-native-community/image-editor@portal:${{ inputs.module-to-install }}
+        # Link my module
+        if [ -d ".yarn" ]; then
+          # Yarn Berry (2+) syntax:
+          yarn add @react-native-community/image-editor@portal:${{ inputs.module-to-install }}
+        else
+          # Yarn1 syntax:
+          yarn add ${{ inputs.module-to-install }}
+        fi
 
         # Debug info
-        npx react-native@${{ inputs.rn-ver }} info
+        npx @react-native-community/cli info
 
         if [[ '${{ inputs.platform }}' == 'ios' ]]; then
           brew install xcbeautify
