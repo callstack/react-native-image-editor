@@ -65,19 +65,19 @@
     }
   },
   "devDependencies": {
-    "@babel/core": "^7.24.6",
-    "@callstack/eslint-config": "^14.1.1",
-    "@react-native/babel-preset": "^0.74.83",
-    "@react-native/typescript-config": "^0.74.83",
-    "@types/react": "^18.3.3",
-    "eslint": "^8.57.0",
-    "prettier": "^3.2.5",
+    "@babel/core": "^7.26.0",
+    "@callstack/eslint-config": "^15.0.0",
+    "@react-native/babel-preset": "^0.77.0",
+    "@react-native/typescript-config": "^0.77.0",
+    "@types/react": "^18.3.18",
+    "eslint": "^9.18.0",
+    "prettier": "^3.4.2",
     "react": "^18.3.1",
-    "react-native": "^0.74.1",
-    "react-native-builder-bob": "^0.23.2",
-    "react-native-test-app": "^2.5.35",
+    "react-native": "^0.77.0",
+    "react-native-builder-bob": "^0.35.2",
+    "react-native-test-app": "^4.0.9",
     "release-it": "^10.3.1",
-    "typescript": "^5.4.5"
+    "typescript": "^5.7.3"
   },
   "publishConfig": {
     "access": "public",
