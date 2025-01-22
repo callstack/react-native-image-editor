@@ -31,10 +31,7 @@ function toHeadersObject(
   headers: ImageCropData['headers']
 ): Record<string, string> | undefined {
   return headers instanceof Headers
-    ? Object.fromEntries(
-        // @ts-expect-error: Headers.entries isn't added yet in TS but exists in Runtime
-        headers.entries()
-      )
+    ? Object.fromEntries(headers.entries())
     : headers;
 }
 

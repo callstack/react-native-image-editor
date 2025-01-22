@@ -18,11 +18,11 @@ import { ImageCropper } from './ImageCropper';
 import type { ImageCropData, ImageSize } from './types';
 
 interface State {
-  croppedImageURI: string | null;
+  croppedImageURI: string | undefined;
   cropError: Error | null;
   measuredSize: ImageSize | null;
   cropScale: number;
-  photo: ImageURISource;
+  photo: ImageSize & Pick<ImageURISource, 'uri'>;
 }
 interface Props {
   // noop
@@ -40,7 +40,7 @@ export class SquareImageCropper extends Component<Props, State> {
         width: DEFAULT_IMAGE_WIDTH,
       },
       measuredSize: null,
-      croppedImageURI: null,
+      croppedImageURI: undefined,
       cropError: null,
       cropScale: 1,
     };
@@ -76,7 +76,7 @@ export class SquareImageCropper extends Component<Props, State> {
   _renderImageCropper() {
     const { photo, cropError, measuredSize } = this.state;
 
-    if (!photo) {
+    if (!photo || !measuredSize) {
       return <SafeAreaView style={styles.container} />;
     }
 
@@ -172,7 +172,11 @@ export class SquareImageCropper extends Component<Props, State> {
   };
 
   _reset = () => {
-    this.setState({ croppedImageURI: null, cropError: null, cropScale: 1 });
+    this.setState({
+      croppedImageURI: undefined,
+      cropError: null,
+      cropScale: 1,
+    });
   };
 }
 

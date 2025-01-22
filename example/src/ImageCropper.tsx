@@ -4,11 +4,11 @@ import { Image, Platform, ScrollView } from 'react-native';
 import { NativeSyntheticEvent } from 'react-native/Libraries/Types/CoreEventTypes';
 import { NativeScrollEvent } from 'react-native/Libraries/Components/ScrollView/ScrollView';
 
-import type { ImageSourcePropType, StyleProp, ViewStyle } from 'react-native';
+import type { ImageURISource, StyleProp, ViewStyle } from 'react-native';
 import type { ImageCropData, ImageOffset, ImageSize } from './types';
 
 export interface ImageCropperProps {
-  image: ImageSize & ImageSourcePropType;
+  image: ImageSize & Pick<ImageURISource, 'uri'>;
   size: ImageSize;
   onTransformDataChange?: (data: ImageCropData) => void;
   style?: StyleProp<ViewStyle>;
