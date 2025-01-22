@@ -60,7 +60,7 @@ jobs:
       max-parallel: 4
       matrix:
         new_arch_enabled: [ 1, 0 ]
-        rn_ver: [ latest ] # also, can be any npm tag: 0.71-stable, next, nightly
+        rn_ver: [0.81.5, 0.80.2, 0.79.7, 0.78.3, 0.77.3, 0.76.9, 0.75.5, 0.74.7, 0.73.11, 0.72.17, 0.71.19 ] # also, can be any npm tag: 0.71-stable, next, nightly
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -83,7 +83,7 @@ jobs:
       max-parallel: 3
       matrix:
         new_arch_enabled: [ 1, 0 ]
-        rn_ver: [ latest ] # also, can be any npm tag: 0.71-stable, next, nightly
+        rn_ver: [0.81.5, 0.80.2, 0.79.7, 0.78.3, 0.77.3, 0.76.9, 0.75.5, 0.74.7, 0.73.11, 0.72.17, 0.71.19 ] # also, can be any npm tag: 0.71-stable, next, nightly
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
