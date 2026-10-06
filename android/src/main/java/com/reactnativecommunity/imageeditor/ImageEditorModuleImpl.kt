@@ -20,8 +20,12 @@ import android.os.Build
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Base64
+import android.util.Log
 import androidx.exifinterface.media.ExifInterface
 import com.facebook.common.logging.FLog
+import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory
+import com.facebook.imagepipeline.request.ImageRequest
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
@@ -353,6 +357,9 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         } else if (isLocalUri(uri)) {
             reactContext.contentResolver.openInputStream(Uri.parse(uri))
         } else {
+            openFrescoCachedInputStream(uri)?.let {
+                return it
+            }
             val connection = URL(uri).openConnection()
             headers?.forEach { (key, value) ->
                 if (value is String) {
@@ -360,6 +367,24 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
                 }
             }
             connection.getInputStream()
+        }
+    }
+
+    /**
+     * Reuses the encoded image bytes stored in Fresco's disk cache, e.g. by `Image.prefetch(url)`
+     * or by an `<Image>` that already displayed this URL. Returns null on cache miss.
+     */
+    private fun openFrescoCachedInputStream(uri: String): InputStream? {
+        return try {
+            if (!Fresco.hasBeenInitialized()) return null
+            val request = ImageRequest.fromUri(uri) ?: return null
+            val cacheKey = DefaultCacheKeyFactory.getInstance().getEncodedCacheKey(request, null)
+            val resource = Fresco.getImagePipelineFactory().diskCachesStoreSupplier.get().mainFileCache.getResource(cacheKey)
+            Log.i("RNCImageEditor", "Fresco disk cache ${if (resource != null) "hit" else "miss"} for $uri")
+            resource?.openStream()
+        } catch (e: Exception) {
+            FLog.w(ReactConstants.TAG, "ImageEditor: Fresco disk cache lookup failed for $uri", e)
+            null
         }
     }
 
