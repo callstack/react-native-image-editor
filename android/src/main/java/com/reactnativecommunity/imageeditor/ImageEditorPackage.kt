@@ -6,15 +6,13 @@
  */
 package com.reactnativecommunity.imageeditor
 
-import com.facebook.react.TurboReactPackage
+import com.facebook.react.BaseReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
-import com.facebook.react.turbomodule.core.interfaces.TurboModule
 
-class ImageEditorPackage : TurboReactPackage() {
+class ImageEditorPackage : BaseReactPackage() {
     override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? {
         return if (name == ImageEditorModule.NAME) {
             ImageEditorModule(reactContext)
@@ -24,21 +22,18 @@ class ImageEditorPackage : TurboReactPackage() {
     }
 
     override fun getReactModuleInfoProvider(): ReactModuleInfoProvider {
-        val moduleList: Array<Class<out NativeModule?>> = arrayOf(ImageEditorModule::class.java)
-        val reactModuleInfoMap: MutableMap<String, ReactModuleInfo> = HashMap()
-        for (moduleClass in moduleList) {
-            val reactModule = moduleClass.getAnnotation(ReactModule::class.java) ?: continue
-            reactModuleInfoMap[reactModule.name] =
-                ReactModuleInfo(
-                    reactModule.name,
-                    moduleClass.name,
-                    true,
-                    reactModule.needsEagerInit,
-                    reactModule.hasConstants,
-                    reactModule.isCxxModule,
-                    TurboModule::class.java.isAssignableFrom(moduleClass)
-                )
+        return ReactModuleInfoProvider {
+            mapOf(
+                ImageEditorModule.NAME to
+                    ReactModuleInfo(
+                        ImageEditorModule.NAME, // name
+                        ImageEditorModule::class.java.name, // className
+                        true, // canOverrideExistingModule
+                        false, // needsEagerInit
+                        false, // isCxxModule
+                        true, // isTurboModule
+                    )
+            )
         }
-        return ReactModuleInfoProvider { reactModuleInfoMap }
     }
 }

@@ -3,7 +3,8 @@ description: 'Set up your GitHub Actions workflow with a specific version of Nod
 inputs:
   new-arch-enabled:
     description: 'Enable new architecture (example: 1 or 0))'
-    required: true
+    required: false
+    default: '1'
 
   rn-ver:
     description: 'Version of React Native (example: 0.72.6))'

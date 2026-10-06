@@ -80,7 +80,6 @@ RCT_EXPORT_MODULE()
  *        be scaled down to `displaySize` rather than `size`.
  *        All units are in px (not points).
  */
-#ifdef RCT_NEW_ARCH_ENABLED
 - (void) cropImage:(NSString *)uri
          cropData:(JS::NativeRNCImageEditor::SpecCropImageCropData &)data
          resolve:(RCTPromiseResolveBlock)resolve
@@ -97,25 +96,6 @@ RCT_EXPORT_MODULE()
         quality:@(data.quality().has_value() ? *data.quality() : DEFAULT_COMPRESSION_QUALITY)
         includeBase64:@(data.includeBase64().has_value() ? *data.includeBase64() : NO)
         headers: data.headers()];
-#else
-RCT_EXPORT_METHOD(cropImage:(NSString *)uri
-                  cropData:(NSDictionary *)cropData
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-  auto params = [self adaptParamsWithFormat:cropData[@"format"]
-    width:cropData[@"size"][@"width"]
-    height:cropData[@"size"][@"height"]
-    offsetX:cropData[@"offset"][@"x"]
-    offsetY:cropData[@"offset"][@"y"]
-    resizeMode:cropData[@"resizeMode"]
-    displayWidth:cropData[@"displaySize"] ? cropData[@"displaySize"][@"width"] : @(DEFAULT_DISPLAY_SIZE)
-    displayHeight:cropData[@"displaySize"] ? cropData[@"displaySize"][@"height"] : @(DEFAULT_DISPLAY_SIZE)
-    quality:cropData[@"quality"] ? cropData[@"quality"] : @(DEFAULT_COMPRESSION_QUALITY)
-    includeBase64:cropData[@"includeBase64"]
-    headers:cropData[@"headers"]];
-
-#endif
   NSMutableURLRequest *imageRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString: uri]];
   [params.headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
     if (value) {
@@ -198,12 +178,10 @@ RCT_EXPORT_METHOD(cropImage:(NSString *)uri
   }];
 }
 
-#ifdef RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
     return std::make_shared<facebook::react::NativeRNCImageEditorSpecJSI>(params);
 }
-#endif
 
 @end
