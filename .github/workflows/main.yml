@@ -59,7 +59,6 @@ jobs:
       fail-fast: false
       max-parallel: 4
       matrix:
-        new_arch_enabled: [ 1, 0 ]
         rn_ver: [ latest ] # also, can be any npm tag: 0.71-stable, next, nightly
     steps:
       - name: Checkout repository
@@ -69,7 +68,6 @@ jobs:
       - uses: ./.github/actions/build-app
         with:
           arch: arm64-v8a
-          new-arch-enabled: ${{ matrix.new_arch_enabled }}
           rn-ver: ${{ matrix.rn_ver }}
           module-to-install: ${{ github.workspace }}
           store-artifacts: true
@@ -82,7 +80,6 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix:
-        new_arch_enabled: [ 1, 0 ]
         rn_ver: [ latest ] # also, can be any npm tag: 0.71-stable, next, nightly
     steps:
       - name: Checkout repository
@@ -91,7 +88,6 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/actions/build-app
         with:
-          new-arch-enabled: ${{ matrix.new_arch_enabled }}
           rn-ver: ${{ matrix.rn_ver }}
           module-to-install: ${{ github.workspace }}
           store-artifacts: true

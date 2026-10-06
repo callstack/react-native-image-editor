@@ -12,6 +12,20 @@ Originally extracted from React Native [`issue#23313`](https://github.com/facebo
 
 ## Getting started
 
+### Requirements
+
+Starting from v5, this library supports only the [New Architecture](https://reactnative.dev/architecture/landing-page) (TurboModules). The Old Architecture is no longer supported.
+
+| Library version | React Native version | Architecture   |
+| --------------- | -------------------- | -------------- |
+| 5.x             | >= 0.74              | New only       |
+| 4.x             | >= 0.57              | Old and New    |
+
+> [!NOTE]
+> React Native 0.76+ enables the New Architecture by default. On React Native 0.74 and 0.75 you must enable it manually: set `newArchEnabled=true` in `android/gradle.properties`, and install pods with `RCT_NEW_ARCH_ENABLED=1 npx pod-install`.
+>
+> If your app still uses the Old Architecture, stay on v4.
+
 ### Install
 
 ```shell
