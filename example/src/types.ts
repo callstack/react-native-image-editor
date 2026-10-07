@@ -1,16 +1,12 @@
-export interface ImageOffset {
-  x: number;
-  y: number;
-}
+import type ImageEditor from '@react-native-community/image-editor';
 
-export interface ImageSize {
-  width: number;
-  height: number;
-}
+// The library only has a default export, so derive the types from `cropImage`
+type CropImage = typeof ImageEditor.cropImage;
 
-export interface ImageCropData {
-  offset: ImageOffset;
-  size: ImageSize;
-  displaySize?: ImageSize;
-  resizeMode?: 'contain' | 'cover' | 'stretch';
-}
+export type CropResult = Omit<Awaited<ReturnType<CropImage>>, 'base64'> & {
+  base64?: string;
+};
+
+export type ImageCropData = Omit<Parameters<CropImage>[1], 'includeBase64'> & {
+  includeBase64?: boolean;
+};

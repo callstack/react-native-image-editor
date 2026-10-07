@@ -1,2 +1,0 @@
-export const DEFAULT_IMAGE_HEIGHT = 720;
-export const DEFAULT_IMAGE_WIDTH = 1080;
