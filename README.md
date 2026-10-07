@@ -10,6 +10,10 @@ Image Editor Native module for React Native.
 
 Originally extracted from React Native [`issue#23313`](https://github.com/facebook/react-native/issues/23313) and maintained by the community.
 
+<img src="./example/screenshots/editor.jpg" width="280" alt="Example app: selecting a crop area on an image" />
+
+_Screenshot from the [example app](/example). The crop UI is example code, not part of this library, which provides only `ImageEditor.cropImage()`._
+
 ## Getting started
 
 ### Requirements
@@ -18,7 +22,7 @@ Starting from v5, this library supports only the [New Architecture](https://reac
 
 | Library version | React Native version | Architecture   |
 | --------------- | -------------------- | -------------- |
-| 5.x             | >= 0.74              | New only       |
+| 5.x             | >= 0.77              | New only       |
 | 4.x             | >= 0.57              | Old and New    |
 
 > [!NOTE]
@@ -86,7 +90,12 @@ ImageEditor.cropImage(uri, cropData).then((result) => {
 | `type`                   | `string` | The MIME type of the image (`'image/jpeg'`, `'image/png'`, `'image/webp'`)                                                                                                                     |
 | `base64`<br>_(optional)_ | `string` | The base64-encoded image data example: `'/9j/4AAQSkZJRgABAQAAAQABAAD'`<br>if you need data URI as the `source` for an `Image` element for example, you can use `data:${type};base64,${base64}` |
 
-For more advanced usage check our [example app](/example/src/App.tsx).
+## Example app
+
+The [example app](/example) shows every `cropImage` option, plus a cache lab for `Image.prefetch` / `<Image>` cache reuse. See its [README](/example/README.md) for how to run it.
+
+> [!NOTE]
+> The example UI (crop box, controls, result view) is **not part of this library**. It's example code built with plain React Native. The library itself only provides `ImageEditor.cropImage()`.
 
 <!-- badges -->
 
