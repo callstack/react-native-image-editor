@@ -3,6 +3,7 @@ import type {
   Double,
   Float,
   Int32,
+  // @ts-expect-error TS2307 Cannot find module '../CodegenTypes'
 } from 'react-native/Libraries/Types/CodegenTypes';
 import { TurboModuleRegistry } from 'react-native';
 
