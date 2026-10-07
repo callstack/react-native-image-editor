@@ -357,33 +357,58 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
         } else if (isLocalUri(uri)) {
             reactContext.contentResolver.openInputStream(Uri.parse(uri))
         } else {
-            openFrescoCachedInputStream(uri)?.let {
+            openFrescoCachedInputStream(uri, headers)?.let {
                 return it
             }
-            val connection = URL(uri).openConnection()
-            headers?.forEach { (key, value) ->
-                if (value is String) {
-                    connection.setRequestProperty(key, value)
-                }
-            }
-            connection.getInputStream()
+            openRemoteInputStream(uri, headers)
         }
     }
 
+    private fun openRemoteInputStream(uri: String, headers: HashMap<String, Any>?): InputStream {
+        val connection = URL(uri).openConnection()
+        headers?.forEach { (key, value) ->
+            if (value is String) {
+                connection.setRequestProperty(key, value)
+            }
+        }
+        return connection.getInputStream()
+    }
+
     /**
-     * Reuses the encoded image bytes stored in Fresco's disk cache, e.g. by `Image.prefetch(url)`
-     * or by an `<Image>` that already displayed this URL. Returns null on cache miss.
+     * Reads the image through Fresco's disk cache, the one `Image.prefetch(url)` and `<Image>`
+     * use. On cache miss the image is downloaded into the cache, so a later `<Image>` with the
+     * same URL loads it from disk. Returns null if the cache can't be used.
      */
-    private fun openFrescoCachedInputStream(uri: String): InputStream? {
+    private fun openFrescoCachedInputStream(
+        uri: String,
+        headers: HashMap<String, Any>?
+    ): InputStream? {
+        val (fileCache, cacheKey) =
+            try {
+                if (!Fresco.hasBeenInitialized()) return null
+                val request = ImageRequest.fromUri(uri) ?: return null
+                Pair(
+                    Fresco.getImagePipelineFactory().diskCachesStoreSupplier.get().mainFileCache,
+                    DefaultCacheKeyFactory.getInstance().getEncodedCacheKey(request, null)
+                )
+            } catch (e: Exception) {
+                FLog.w(ReactConstants.TAG, "ImageEditor: Fresco disk cache unavailable", e)
+                return null
+            }
+
+        fileCache.getResource(cacheKey)?.let {
+            Log.i("RNCImageEditor", "Fresco disk cache hit for $uri")
+            return it.openStream()
+        }
+
+        // Network errors propagate to the caller as before; only cache failures fall back
+        val input = openRemoteInputStream(uri, headers)
         return try {
-            if (!Fresco.hasBeenInitialized()) return null
-            val request = ImageRequest.fromUri(uri) ?: return null
-            val cacheKey = DefaultCacheKeyFactory.getInstance().getEncodedCacheKey(request, null)
-            val resource = Fresco.getImagePipelineFactory().diskCachesStoreSupplier.get().mainFileCache.getResource(cacheKey)
-            Log.i("RNCImageEditor", "Fresco disk cache ${if (resource != null) "hit" else "miss"} for $uri")
+            val resource = input.use { fileCache.insert(cacheKey) { out -> it.copyTo(out) } }
+            Log.i("RNCImageEditor", "Fresco disk cache miss, stored $uri")
             resource?.openStream()
         } catch (e: Exception) {
-            FLog.w(ReactConstants.TAG, "ImageEditor: Fresco disk cache lookup failed for $uri", e)
+            FLog.w(ReactConstants.TAG, "ImageEditor: Failed to store $uri in Fresco disk cache", e)
             null
         }
     }
