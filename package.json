@@ -56,7 +56,7 @@
     "prepack": "yarn run build"
   },
   "peerDependencies": {
-    "react-native": ">=0.74.0"
+    "react-native": ">=0.77.0"
   },
   "peerDependenciesMeta": {
     "react-native": {

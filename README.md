@@ -18,7 +18,7 @@ Starting from v5, this library supports only the [New Architecture](https://reac
 
 | Library version | React Native version | Architecture   |
 | --------------- | -------------------- | -------------- |
-| 5.x             | >= 0.74              | New only       |
+| 5.x             | >= 0.77              | New only       |
 | 4.x             | >= 0.57              | Old and New    |
 
 > [!NOTE]
