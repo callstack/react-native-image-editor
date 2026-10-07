@@ -6,6 +6,12 @@ module.exports = [
   },
   ...callstackConfigReact,
   {
+    files: ['**/*.web.{js,ts,tsx}'],
+    rules: {
+      'promise/prefer-await-to-then': 'off',
+    },
+  },
+  {
     files: ['eslint.config.js', 'example/**/*.{js,ts,tsx}'],
     rules: {
       'import/no-extraneous-dependencies': 'off',
