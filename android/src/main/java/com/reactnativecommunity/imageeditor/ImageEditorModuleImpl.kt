@@ -375,9 +375,9 @@ class ImageEditorModuleImpl(private val reactContext: ReactApplicationContext) {
     }
 
     /**
-     * Reads the image through Fresco's disk cache, the one `Image.prefetch(url)` and `<Image>`
-     * use. On cache miss the image is downloaded into the cache, so a later `<Image>` with the
-     * same URL loads it from disk. Returns null if the cache can't be used.
+     * Reads the image through Fresco's disk cache, the one `Image.prefetch(url)` and `<Image>` use.
+     * On cache miss the image is downloaded into the cache, so a later `<Image>` with the same URL
+     * loads it from disk. Returns null if the cache can't be used.
      */
     private fun openFrescoCachedInputStream(
         uri: String,
