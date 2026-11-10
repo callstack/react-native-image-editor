@@ -34,6 +34,7 @@
     "ios",
     "cpp",
     "*.podspec",
+    "Package.swift",
     "!ios/build",
     "!android/build",
     "!android/gradle",
@@ -88,6 +89,9 @@
     "android": {
       "javaPackageName": "com.reactnativecommunity.imageeditor"
     }
+  },
+  "swiftpmConfig": {
+    "name": "ImageEditor"
   },
   "react-native-builder-bob": {
     "source": "src",

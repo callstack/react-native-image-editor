@@ -40,6 +40,11 @@ android.iml
 #
 example/ios/Pods
 
+# Swift Package Manager (Package.swift at the repo root)
+.build/
+.swiftpm/
+Package.resolved
+
 # node.js
 #
 node_modules/
