@@ -5,12 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Codegen writes the spec header to ReactCodegen/RNCImageEditorSpec/… and keeps
-// that nesting under both CocoaPods (header_mappings_dir) and SPM (the
-// ReactAppHeaders farm). The plain `#import "RNCImageEditorSpec.h"` used to sit
-// here resolved only through CocoaPods' generated headermaps, which SPM has no
-// equivalent of — SPM could not find the file at all.
+// SPM exposes generated specs through ReactAppHeaders. CocoaPods usually
+// exposes the same nested path, but older Pods setups may only resolve the
+// header through CocoaPods' generated headermaps.
+#if __has_include(<ReactCodegen/RNCImageEditorSpec/RNCImageEditorSpec.h>)
 #import <ReactCodegen/RNCImageEditorSpec/RNCImageEditorSpec.h>
+#else
+#import "RNCImageEditorSpec.h"
+#endif
 
 @interface RNCImageEditor : NSObject <NativeRNCImageEditorSpec>
 
