@@ -8,6 +8,9 @@ on:
     branches:
       - master
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -73,9 +76,9 @@ jobs:
           store-artifacts: true
           platform: android
 
-  build-ios:
-    name: Build iOS
-    runs-on: macos-14
+  build-ios-pods:
+    name: Build iOS (CocoaPods)
+    runs-on: macos-15
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -92,3 +95,24 @@ jobs:
           module-to-install: ${{ github.workspace }}
           store-artifacts: true
           platform: ios
+
+  build-ios-spm:
+    name: Build iOS (SPM)
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        rn_ver: [ latest ] # also, can be any npm tag: 0.71-stable, next, nightly
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/build-app
+        with:
+          rn-ver: ${{ matrix.rn_ver }}
+          module-to-install: ${{ github.workspace }}
+          store-artifacts: false
+          platform: ios
+          ios-package-manager: spm

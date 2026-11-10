@@ -44,6 +44,9 @@ npm install @react-native-community/image-editor --save
 npx pod-install
 ```
 
+> [!NOTE]
+> **Swift Package Manager** — React Native 0.87+ supports building the iOS side with SPM. Once your app is configured to use React Native's SPM integration, this library's `Package.swift` is picked up by the autolinker automatically. Apps on React Native 0.77–0.86 continue to use CocoaPods through `react-native-image-editor.podspec`, which compiles the same `ios/` sources.
+
 ## Usage
 
 Start by importing the library:

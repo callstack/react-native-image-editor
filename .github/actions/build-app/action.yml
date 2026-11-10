@@ -24,6 +24,11 @@ inputs:
     required: false
     default: 'true'
 
+  ios-package-manager:
+    description: 'iOS dependency manager (pods or spm)'
+    required: false
+    default: 'pods'
+
   platform:
     description: 'Platform (example: android or ios))'
     required: true
@@ -82,9 +87,9 @@ runs:
         fi
 
         if [[ '${{ inputs.platform }}' == 'ios' ]]; then
-          # Use xcode 16 for RN 0.80+
+          # Use Xcode 16.4 for RN 0.80+; macos-15 includes its iOS 18.5 simulator runtime.
           if [[ '${{ inputs.rn-ver }}' == "0.8"* || "${{ inputs.rn-ver }}" == "latest" ]]; then
-            sudo xcode-select --switch /Applications/Xcode_16.2.app/Contents/Developer
+            sudo xcode-select --switch /Applications/Xcode_16.4.app/Contents/Developer
           fi
         fi
 
@@ -94,11 +99,18 @@ runs:
         if [[ '${{ inputs.platform }}' == 'ios' ]]; then
           brew install xcbeautify
 
-          # Update pods after adding new module
-          npx pod-install
+          xcodebuild_container=(-workspace "ios/${APP_NAME}.xcworkspace")
+          if [[ '${{ inputs.ios-package-manager }}' == 'spm' ]]; then
+            npx react-native spm add --deintegrate --yes
+            xcodebuild_container=(-project "ios/${APP_NAME}.xcodeproj")
+          else
+            # Update pods after adding new module
+            npx pod-install
+          fi
 
           # Build iOS App
-          xcodebuild -scheme ${{ env.APP_NAME }} -workspace ios/${{ env.APP_NAME }}.xcworkspace -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator'  | xcbeautify --quiet
+          set -o pipefail
+          xcodebuild -scheme "${APP_NAME}" "${xcodebuild_container[@]}" -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' | xcbeautify --quiet
 
           # set output variable
           echo "app_path=$(find ~/Library/Developer/Xcode/DerivedData -type d -name "${{ env.APP_NAME }}.app")" >> $GITHUB_OUTPUT
