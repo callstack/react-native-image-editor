@@ -101,7 +101,7 @@ runs:
 
           xcodebuild_container=(-workspace "ios/${APP_NAME}.xcworkspace")
           if [[ '${{ inputs.ios-package-manager }}' == 'spm' ]]; then
-            npx react-native spm add --yes
+            npx react-native spm add --deintegrate --yes
             xcodebuild_container=(-project "ios/${APP_NAME}.xcodeproj")
           else
             # Update pods after adding new module
