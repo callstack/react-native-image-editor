@@ -8,6 +8,9 @@ on:
     branches:
       - master
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -75,7 +78,7 @@ jobs:
 
   build-ios-pods:
     name: Build iOS (CocoaPods)
-    runs-on: macos-14
+    runs-on: macos-15
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -95,7 +98,7 @@ jobs:
 
   build-ios-spm:
     name: Build iOS (SPM)
-    runs-on: macos-14
+    runs-on: macos-15
     strategy:
       fail-fast: false
       max-parallel: 3
