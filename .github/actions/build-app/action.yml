@@ -87,9 +87,9 @@ runs:
         fi
 
         if [[ '${{ inputs.platform }}' == 'ios' ]]; then
-          # Use xcode 16 for RN 0.80+
+          # Use Xcode 16.4 for RN 0.80+; macos-15 includes its iOS 18.5 simulator runtime.
           if [[ '${{ inputs.rn-ver }}' == "0.8"* || "${{ inputs.rn-ver }}" == "latest" ]]; then
-            sudo xcode-select --switch /Applications/Xcode_16.2.app/Contents/Developer
+            sudo xcode-select --switch /Applications/Xcode_16.4.app/Contents/Developer
           fi
         fi
 
