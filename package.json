@@ -55,6 +55,9 @@
     "lint:android": "./android/gradlew -p android spotlessCheck --quiet",
     "format:android": "./android/gradlew -p android spotlessapply",
     "build": "bob build",
+    "changeset": "changeset",
+    "version-packages": "changeset version && yarn install --mode=update-lockfile",
+    "release": "changeset publish",
     "prepack": "yarn run build"
   },
   "peerDependencies": {
@@ -68,6 +71,8 @@
   "devDependencies": {
     "@babel/core": "^7.29.7",
     "@callstack/eslint-config": "^15.0.0",
+    "@changesets/changelog-github": "^1.0.1",
+    "@changesets/cli": "^3.0.3",
     "@react-native/babel-preset": "^0.87.1",
     "@react-native/typescript-config": "^0.87.1",
     "@types/react": "^19.3.0",
