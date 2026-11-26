@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    branches: [master]
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: write # push version commits / tags, create GitHub releases
+  pull-requests: write # open the "Version Packages" PR
+  id-token: write # npm trusted publishing + provenance
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - run: corepack enable
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: yarn
+
+      - run: yarn install --immutable
+
+      - name: Create release PR or publish to npm
+        id: changesets
+        uses: changesets/action@v2
+        with:
+          version-script: yarn version-packages
+          publish-script: yarn release
+          commit-message: 'chore: version packages'
+          pr-title: 'chore: version packages'
+          # Tags in this repo have no `v` prefix (e.g. `5.1.0`), so the tag +
+          # GitHub release are created in the next step instead
+          create-github-releases: false
+          push-git-tags: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          YARN_NPM_PUBLISH_PROVENANCE: 'true'
+
+      - name: Create GitHub release
+        if: steps.changesets.outputs.published == 'true'
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          PKG=$(node -p "require('./package.json').name")
+          PREV=$(gh release view --json tagName -q .tagName)
+          REPO_URL="https://github.com/$GITHUB_REPOSITORY"
+          {
+            echo "## What's Changed"
+            sed -n "/^## $VERSION\$/,/^## /{/^## /!p;}" CHANGELOG.md | sed 's/^### /#### /'
+            echo
+            echo "---"
+            echo
+            echo "**Full Changelog**: $REPO_URL/compare/$PREV...$VERSION"
+            echo "**Npm diff**: [\`$PREV...$VERSION\`](https://npmfs.com/compare/$PKG/$PREV/$VERSION/)"
+          } > release-notes.md
+          gh release create "$VERSION" --target "$GITHUB_SHA" --title "Release $VERSION" --notes-file release-notes.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
