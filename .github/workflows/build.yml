@@ -41,7 +41,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - uses: retyui/oss-react-native-build/build-app@3949cf9a5dcbbccba4750366a820ad665f0e0ea1 # v0
+      - uses: retyui/oss-react-native-build/build-app@v0
         with:
           platform: android
           rn-ver: ${{ matrix.rn_ver }}
@@ -61,7 +61,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - uses: retyui/oss-react-native-build/build-app@3949cf9a5dcbbccba4750366a820ad665f0e0ea1 # v0
+      - uses: retyui/oss-react-native-build/build-app@v0
         with:
           platform: ios
           rn-ver: ${{ matrix.rn_ver }}
