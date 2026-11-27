@@ -1,0 +1,83 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/lint.yml'
+      - '.github/actions/**'
+      - 'android/**'
+      - 'src/**'
+      - 'example/**'
+      - 'package.json'
+      - 'yarn.lock'
+      - '.yarnrc.yml'
+      - '.yarn/releases/**'
+      - 'babel.config.js'
+      - 'eslint.config.js'
+      - 'prettier.config.js'
+      - 'tsconfig*.json'
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    paths:
+      - '.github/workflows/lint.yml'
+      - '.github/actions/**'
+      - 'android/**'
+      - 'src/**'
+      - 'example/**'
+      - 'package.json'
+      - 'yarn.lock'
+      - '.yarnrc.yml'
+      - '.yarn/releases/**'
+      - 'babel.config.js'
+      - 'eslint.config.js'
+      - 'prettier.config.js'
+      - 'tsconfig*.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ACTIONS_RUNNER_DEBUG: true # Enable debug logs
+
+jobs:
+  cache-node-modules:
+    name: Cache node_modules
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/install-dependencies
+        with:
+          lookup-only: true
+
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-22.04
+    needs: [cache-node-modules]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/install-dependencies
+
+      - name: Lint Android files
+        run: yarn lint:android
+
+      - name: Types check
+        run: yarn ts
+
+      - name: Lib build
+        run: yarn build
+
+      - name: Lint files
+        run: yarn lint
+        # required to run after `yarn build`
