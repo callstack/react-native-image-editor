@@ -1,0 +1,68 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/build.yml'
+      - 'android/**'
+      - 'ios/**'
+      - 'src/**'
+      - '*.podspec'
+      - 'Package.swift'
+      - 'package.json'
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    paths:
+      - '.github/workflows/build.yml'
+      - 'android/**'
+      - 'ios/**'
+      - 'src/**'
+      - '*.podspec'
+      - 'Package.swift'
+      - 'package.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-android:
+    name: Build Android (RN ${{ matrix.rn_ver }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        rn_ver: [ latest, 0.87.1, 0.86.3 ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - uses: retyui/oss-react-native-build/build-app@3949cf9a5dcbbccba4750366a820ad665f0e0ea1 # v0
+        with:
+          platform: android
+          rn-ver: ${{ matrix.rn_ver }}
+          android-arch: arm64-v8a
+
+  build-ios:
+    name: Build iOS ${{ matrix.ios-package-manager }} (RN ${{ matrix.rn_ver }})
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        rn_ver: [ latest, 0.87.1, 0.86.3 ]
+        ios-package-manager: [ pods, spm ]
+        exclude:
+          - rn_ver: 0.86.3 # SPM requires RN >= 0.87
+            ios-package-manager: spm
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - uses: retyui/oss-react-native-build/build-app@3949cf9a5dcbbccba4750366a820ad665f0e0ea1 # v0
+        with:
+          platform: ios
+          rn-ver: ${{ matrix.rn_ver }}
+          ios-package-manager: ${{ matrix.ios-package-manager }}
