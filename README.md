@@ -102,8 +102,8 @@ The [example app](/example) shows every `cropImage` option, plus a cache lab for
 
 <!-- badges -->
 
-[build-badge]: https://github.com/callstack/react-native-image-editor/actions/workflows/main.yml/badge.svg
-[build]: https://github.com/callstack/react-native-image-editor/actions/workflows/main.yml
+[build-badge]: https://github.com/callstack/react-native-image-editor/actions/workflows/build.yml/badge.svg?branch=master
+[build]: https://github.com/callstack/react-native-image-editor/actions/workflows/build.yml
 [version-badge]: https://img.shields.io/npm/v/@react-native-community/image-editor.svg
 [package]: https://www.npmjs.com/package/@react-native-community/image-editor
 [license-badge]: https://img.shields.io/npm/l/@react-native-community/image-editor.svg
